@@ -54,6 +54,7 @@ table {
 	--col_orange-sombre: #93532F;
 	--col_vert: #1D6154;
 	--col_vert-sombre: #0E2F28;
+	--col_blanc-casse: #FFFEF8;
 }
 
 body {
@@ -110,8 +111,35 @@ nav li {
 }
 
 li:hover {
-	color: #B1663C;
+	/* color: #B1663C; */
+	font-weight: 600;
+	text-shadow: 0px 0px 2px black ;
 }
+
+main {
+	position: relative;
+}
+
+#nav__login {
+	cursor: pointer;
+	/* font-weight: 600; */
+}
+
+/*** Login ***/
+#login {
+    background-color: #FFFEF8;
+    /* background-color: rgba(255, 255, 255, 1); */
+	height: 872px;
+	display: none;
+}
+
+#login_title {
+	/* font: Syne 30px 700; */
+	margin: auto;
+	text-align: center;
+}
+
+
 
 /*** SECTION Introduction ***/
 #introduction {
