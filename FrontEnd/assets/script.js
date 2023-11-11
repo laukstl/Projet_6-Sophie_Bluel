@@ -93,7 +93,7 @@ nav_login.addEventListener("click", () => show_login_screen());
 
 function show_login_screen() {
     const main = document.querySelector("main");
-    // clear the main section ( keep header/footer)
+    // clear the main section ( keep header/footer )
     main.innerHTML = "";
 
     // création section LOGIN
@@ -158,6 +158,7 @@ function show_login_screen() {
     // BOUTTON
     const login_btn = document.createElement("button");
     section_login.appendChild(login_btn);
+    login_btn.type = "button"; // pour éviter le submit du button par défaut et le refresh de la page
     login_btn.style.width = "180px";
     login_btn.style.height = "51px";
     login_btn.style.cursor = "pointer";
@@ -167,8 +168,16 @@ function show_login_screen() {
     login_btn.classList.add("btn--selected");
     login_btn_span.innerText = "Se connecter";
     login_btn_span.style["font-size"] = "14px";
+    login_btn.addEventListener("mouseover", () => {
+        login_btn.classList.add("btn--pushed");
+        login_btn.classList.remove("btn--selected");
+    });
+    login_btn.addEventListener("mouseout", () => {
+        login_btn.classList.remove("btn--pushed");
+        login_btn.classList.add("btn--selected");
+    });
     login_btn.addEventListener("click", () => {
-        alert("Click!");
+        check_login(login_email, login_password);
     });
 
     // lien MDP FORGOTTEN
@@ -183,6 +192,32 @@ function show_login_screen() {
     section_login.style.display = "flex";
     section_login.style["flex-direction"] = "column";
     section_login.style["align-items"] = "center";
+}
+
+async function check_login (login_email, login_password) {
+    
+    // const email = login_email.value;
+    // const password = login_password.value;
+
+    const userData = {
+        email: "sophie.bluel@test.tld",
+        password: "S0phie"
+    }
+
+    let response_login = await fetch("http://localhost:5678/api/users/login", {
+                                        method: "POST",
+                                        headers: {
+                                            "Content-Type": "application/json"
+                                          },
+                                        body: JSON.stringify(userData)
+                                    });
+
+    // if(response_login.ok){...}
+    // else{print(response_login.status)}
+    const response = await response_login.json();
+    const userId = response.userId;
+    const token = response.token;
+    console.log(userId + " - " + token);
 }
 
 } // main_func()

@@ -190,6 +190,11 @@ main {
 	min-width: 100px;
 }
 
+.btn--pushed {
+	color: white;
+	background: var(--col_vert-sombre);
+}
+
 .btn--selected {
 	color: white;
 	background: var(--col_vert);
