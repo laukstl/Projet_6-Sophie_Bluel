@@ -10,7 +10,7 @@ async function main_func () {
     // section_main
     let main = null;
     // section_category
-    let category = null;
+    let categoryContainer = null;
     // fenêtre de login
     let section_login = null;
     // <input > de email et password
@@ -20,16 +20,16 @@ async function main_func () {
     let login_error_message = null;
 
     // callage...
-    document.getElementById("projetsTitle").style["margin-top"] = "130px";
+    document.getElementById("portfolioTitle").style["margin-top"] = "130px";
 
-const gallery_element = document.querySelector(".gallery");
+const galleryContainer = document.querySelector(".galleryContainer");
 
 /* Affichage des cards */
 function show_cards(cards) {
     clean_gallery()
     cards.forEach(item => {
         const card = document.createElement("figure");
-        gallery_element.appendChild(card);
+        galleryContainer.appendChild(card);
 
         const img = document.createElement("img");
         img.src = item.imageUrl;
@@ -43,14 +43,14 @@ function show_cards(cards) {
 
 /* clean-gal en prevision future anim */
 function clean_gallery() {
-    gallery_element.innerHTML = "";
+    galleryContainer.innerHTML = "";
 }
 
 function refresh() {
     /* Update les btn category avec le bon background */
     const all_btn = document.querySelectorAll(".btn");
     all_btn.forEach((button, index) => {
-        if (category_selected == index) {
+        if (category_selected === index) {
             button.classList.add("btn--selected")
         } else {
             button.classList.remove("btn--selected")
@@ -78,10 +78,10 @@ try {
         category_tab["0"] = "Tous";
 
         /* creation des btn category */
-        category = document.querySelector(".category");
+        categoryContainer = document.querySelector(".categoryContainer");
         for (let i=0; i<Object.keys(category_tab).length; i++) {
             const btn = document.createElement("button");
-            category.appendChild(btn);
+            categoryContainer.appendChild(btn);
             btn.style.cursor = "pointer";
             const btn_txt = document.createElement("span");
             btn.appendChild(btn_txt);
@@ -93,7 +93,7 @@ try {
                 category_selected = i;
                 refresh();
             });
-        }   
+        }
     }
     else {
         console.error("La requête a échoué. Code : " + response_works.status);
@@ -117,8 +117,8 @@ function login_window() {
 
     // création section LOGIN
     section_login = document.createElement("form");
-    const box_section_login = document.getElementById("box_section_login");
-    box_section_login.appendChild(section_login);
+    const loginContainer = document.getElementById("loginContainer");
+    loginContainer.appendChild(section_login);
     section_login.id = "login";
     section_login.style.gap = "30px";
     section_login.style.top = "130px";
@@ -182,29 +182,35 @@ function login_window() {
     login_password.style.border = "0px";
     login_password.style.filter = "drop-shadow(0px 3px 15px rgba(0, 0, 0, 0.1))";
 
-    // BOUTTON
-    const login_btn = document.createElement("button");
-    section_login.appendChild(login_btn);
-    login_btn.type = "button"; // pour éviter le submit du button par défaut et le refresh de la page
-    login_btn.style.width = "180px";
-    login_btn.style.height = "51px";
-    login_btn.style.cursor = "pointer";
-    const login_btn_span = document.createElement("span")
-    login_btn.appendChild(login_btn_span);
-    login_btn.classList.add("btn");
-    login_btn.classList.add("btn--selected");
-    login_btn_span.innerText = "Se connecter";
-    login_btn_span.style["font-size"] = "14px";
-    login_btn.addEventListener("mouseover", () => {
-        login_btn.classList.add("btn--pushed");
-        login_btn.classList.remove("btn--selected");
+    // création du BOUTTON
+    const loginButton = document.createElement("button");
+    section_login.appendChild(loginButton);
+
+    loginButton.type = "button"; // pour éviter le submit du button par défaut et le refresh de la page
+    loginButton.classList.add("btn", "btn--selected");
+    loginButton.style.width = "180px";
+    loginButton.style.height = "51px";
+    loginButton.style.cursor = "pointer";
+    loginButton.style.innerText = "Se connecter";
+    loginButton.fontSize = "14px";
+    
+    const loginButton_span = document.createElement("span")
+    loginButton.appendChild(loginButton_span);
+    loginButton_span.innerText = "Se connecter";
+    loginButton_span.style["font-size"] = "14px";
+
+    loginButton.addEventListener("mouseover", () => {
+        loginButton.classList.add("btn--pushed");
+        loginButton.classList.remove("btn--selected");
     });
-    login_btn.addEventListener("mouseout", () => {
-        login_btn.classList.remove("btn--pushed");
-        login_btn.classList.add("btn--selected");
+
+    loginButton.addEventListener("mouseout", () => {
+        loginButton.classList.remove("btn--pushed");
+        loginButton.classList.add("btn--selected");
     });
-    login_btn.addEventListener("click", () => {
-        check_login();
+
+    loginButton.addEventListener("click", () => {
+        checkLogin();
     });
 
     // lien MDP FORGOTTEN
@@ -221,8 +227,9 @@ function login_window() {
     section_login.style["align-items"] = "center";
 }
 
-async function check_login () {
+async function checkLogin () {
 
+    // Valeurs pour les tests
     const userData = {
         email: "sophie.bluel@test.tld",
         password: "S0phie"
@@ -263,7 +270,7 @@ async function check_login () {
           
             console.log(userId + " - " + token);
 
-            mode_edition();
+            editMode();
         }
         else {
             if (response_login.status === 401) {
@@ -284,62 +291,146 @@ async function check_login () {
     }
 }
 
-async function mode_edition() {
-    //**  Bannière  **//   au top header
-    const editMode_banner = document.getElementById("editMode_banner");
-    editMode_banner.style.background = "Black";
-    editMode_banner.style.height = "60px";
-    editMode_banner.style.display = "flex";
-    editMode_banner.style["justify-content"] = "center";
-    editMode_banner.style["align-items"] = "center";
-    editMode_banner.style.gap = "10px";
-    // icon
-    const editMode_banner_icon = document.createElement("img");
-    editMode_banner.appendChild(editMode_banner_icon);
-    editMode_banner_icon.setAttribute("src", "./assets/icons/edit_white.svg");
-    editMode_banner_icon.style.height = "16px";
-    // text
-    const editMode_banner_txt = document.createElement("p");
-    editMode_banner.appendChild(editMode_banner_txt);
-    editMode_banner_txt.style.color = "white";
-    editMode_banner_txt.innerText = "Mode édition";
+function editMode() {
+    //  Ajout d'une bannière au dessus de l'header
+    const banner = document.getElementById("editModeBanner");
+    banner.style.background = "Black";
+    banner.style.height = "60px";
+    banner.style.display = "flex";
+    banner.style.justifyContent = "center";
+    banner.style.alignItems = "center";
+    banner.style.gap = "10px";
 
-    //**  nav login/logout  **//
-    const logInOut = document.getElementById("nav__login");
-    logInOut.innerText = "logout";
+        // Icône de la bannière
+        const bannerIcon = document.createElement("img");
+        bannerIcon.setAttribute("src", "./assets/icons/edit_white.svg");
+        bannerIcon.style.height = "16px";
+        banner.appendChild(bannerIcon);
 
-    //**  Titre "Mes projets"  **// 
-    const Titre_MesProjets = document.querySelector("#projetsTitle > h2");
-    Titre_MesProjets.style.margin = "auto 0";
+        // Texte de la bannière
+        const bannerText = document.createElement("p");
+        bannerText.style.color = "white";
+        bannerText.innerText = "Mode édition";
+        banner.appendChild(bannerText);
 
-    // box
-    const editMode_projetsTitle_box = document.createElement("div");
-    editMode_projetsTitle_box.style.display = "flex";
-    editMode_projetsTitle_box.style.gap = "1em";
-    editMode_projetsTitle_box.style["margin-left"] = "2em";
-    const projetsTitle = document.getElementById("projetsTitle");
-    projetsTitle.style.display = "flex";
-    projetsTitle.style["justify-content"] = "center";
-    projetsTitle.style["align-items"] = "center";
-    projetsTitle.style.margin = "130px 0 100px 0";
-    projetsTitle.appendChild(editMode_projetsTitle_box);
-    // icon
-    const editMode_projetsTitle_icon = document.createElement("img");
-    editMode_projetsTitle_box.appendChild(editMode_projetsTitle_icon);
-    editMode_projetsTitle_icon.setAttribute("src", "./assets/icons/edit_black.svg");
-    editMode_projetsTitle_icon.style.height = "16px";
-    // text
-    const editMode_projetsTitle_txt = document.createElement("p");
-    editMode_projetsTitle_box.appendChild(editMode_projetsTitle_txt);
-    editMode_projetsTitle_txt.style["font-size"] = "14px";
-    editMode_projetsTitle_txt.innerText = "modifier";
+    // changement de comportement du lien login/logout de la barre de nav du header
+    const navLogin = document.getElementById("nav__login");
+    navLogin.innerText = "logout";
+    // ...Ajouter des actions pour se déconnecter...
 
+   
+    // Conteneur de la bannière ( titre - icone - lien )
+    const portfolioBanner = document.getElementById("portfolioTitle");
+    portfolioBanner.style.display = "flex";
+    portfolioBanner.style.justifyContent = "center";
+    portfolioBanner.style.alignItems = "center";
+    portfolioBanner.style.margin = "130px 0 100px 0";
 
+        // Titre de la section du portfolio
+        const portfolioTitleText = document.querySelector("#portfolioTitle > h2");
+        portfolioTitleText.style.margin = "auto 0";
+
+        // Conteneur ( icone - lien )
+        const linkContainer = document.createElement("div");
+        linkContainer.style.display = "flex";
+        linkContainer.style.gap = "1em";
+        linkContainer.style.marginLeft = "2em";
+        portfolioBanner.appendChild(linkContainer);
+
+            // Icône "modifier"
+            const portfolioBannerIcon = document.createElement("img");
+            portfolioBannerIcon.src = "./assets/icons/edit_black.svg";
+            portfolioBannerIcon.style.height = "16px";
+            linkContainer.appendChild(portfolioBannerIcon);
+            
+            // Lien "modifier"
+            const portfolioBannerLink = document.createElement("a");
+            portfolioBannerLink.style.fontSize = "14px";
+            portfolioBannerLink.innerText = "modifier";
+            portfolioBannerLink.setAttribute("href","#");
+            portfolioBannerLink.style.color = "inherit";
+            linkContainer.appendChild(portfolioBannerLink);
+            
+    // juste pour test
+    linkContainer.addEventListener("click", () => modalWindow());
+
+    // Masquer le modal de connexion et la sélection de catégorie, et afficher la section principale
     section_login.style.display = "none";
+    categoryContainer.style.display = "none";
     main.style.display = "block";
-    category.style.display = "none";
-
 }
+
+function modalWindow() {
+    // Création du conteneur du modal
+    const modalContainer = document.getElementById("modalContainer");
+    modalContainer.style["z-index"] = "9999";
+    modalContainer.style.Height = "688px";
+    modalContainer.style.maxWidth = "630px";
+    modalContainer.style.backgroundColor  = "#fFf";
+    modalContainer.style.boxShadow  = "0px 4px 10px rgba(0, 0, 0, 0.25)";
+    modalContainer.style.borderRadius = "10px";
+    modalContainer.style.position = "absolute";
+    modalContainer.style.margin = "auto";
+    modalContainer.style.top = "400px";
+    modalContainer.style.left = "0";
+    modalContainer.style.right = "0";
+
+    // Bouton de fermeture de la modal
+    const modalCloseButton = document.createElement("img");
+    modalContainer.appendChild(modalCloseButton);
+
+    // Titre
+    const modalTitle = document.createElement("h3");
+    modalContainer.appendChild(modalTitle);
+    modalTitle.innerText = "Galerie photo";
+    modalTitle.style.textAlign = "center";
+    modalTitle.style.fontFamily = "Work Sans";
+    modalTitle.style.fontSize = "26px";
+    modalTitle.style.marginTop = "60px";
+
+    // Conteneur de la gallerie d'images
+    const modalGalleryContainer = document.createElement("div");
+    modalGalleryContainer.style.display = "grid";
+    modalGalleryContainer.style["grid-template-columns"] = "1fr 1fr 1fr 1fr 1fr";
+    modalGalleryContainer.style["grid-column-gap"] = "20px";
+    modalGalleryContainer.style["grid-row-gap"] = "20px";
+    modalGalleryContainer.style.margin = "60px 105px";
+    modalContainer.appendChild(modalGalleryContainer);
+
+    // Trait horizontal de de séparation
+    const modalHorizontalLine = document.createElement("div");
+    modalHorizontalLine.style.width = "420px";
+    modalHorizontalLine.style.height = "20px";
+    modalHorizontalLine.style.borderBottom = "1px solid #B3B3B3";
+    modalHorizontalLine.style.margin = "0 auto";
+    modalContainer.appendChild(modalHorizontalLine);
+
+    // Bouton de submission du formulaire
+    const modalSubmitButton = document.createElement("button");
+    modalContainer.appendChild(modalSubmitButton);
+    modalSubmitButton.style.margin = "30px 0";
+    modalSubmitButton.style.position = "relative";
+    modalSubmitButton.style.left = "50%";
+    modalSubmitButton.style.right = "50%";
+    // juste pour test
+    modalSubmitButton.innerText = "Click!";
+    modalSubmitButton.addEventListener("click", () => {modalContainer.style.display = "none"});
+
+    // Affichage des images dans la gallerie du modal
+    function showModalWindowCards(cards) {
+        cards.forEach(item => {
+            const card = document.createElement("div"); // Es-tu necessaire ?!
+            modalGalleryContainer.appendChild(card);
+
+            const img = document.createElement("img");
+            img.src = item.imageUrl;
+            img.style.width = "100%";
+            card.appendChild(img);
+        });
+    }
+    showModalWindowCards(card_listing)
+}
+// modalWindow()
 
 } // main_func()
 main_func();

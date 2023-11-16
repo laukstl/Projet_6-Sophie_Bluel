@@ -89,7 +89,7 @@ h1 {
 	color: var(--col_orange);
 }
 
-.logo > span {
+#logoContainer > span {
 	font-family: 'Work Sans';
 	font-size:10px;
 	letter-spacing: 0.1em;
@@ -174,7 +174,7 @@ main {
 }
 
 /* portfolio Category */
-.category {
+.categoryContainer {
 	text-align: center;
 	margin: auto;
 	margin-bottom: 50px;
@@ -207,7 +207,7 @@ main {
 }
 
 /* portfolio Gallery */
-.gallery {
+.galleryContainer {
 	width: 100%;
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
@@ -215,7 +215,7 @@ main {
 	grid-row-gap: 20px;
 }
 
-.gallery img {
+.galleryContainer img {
 	width: 100%;
 }
 
