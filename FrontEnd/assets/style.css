@@ -180,7 +180,7 @@ main {
 	margin-bottom: 50px;
 }
 
-.btn {
+/* .btn {
 	background: white;
 	border-radius: 60px;
 	border: 1px solid var(--col_vert);
@@ -188,9 +188,9 @@ main {
 	padding: 8px 15px;
 	margin-left: 15px;
 	min-width: 100px;
-}
+} */
 
-.btn--pushed {
+/* .btn--pushed {
 	color: white;
 	background: var(--col_vert-sombre);
 }
@@ -204,7 +204,7 @@ main {
 	font-family: Syne;
 	font-weight: 700;
 	font-size: 16px;
-}
+} */
 
 /* portfolio Gallery */
 .galleryContainer {
