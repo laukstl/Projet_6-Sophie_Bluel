@@ -1,13 +1,55 @@
+/* eslint-disable no-tabs */
+/* eslint-disable no-multiple-empty-lines */
 /* eslint-disable no-multi-spaces */
+
+function cssTweak () {
+    document.querySelector("body").style.backgroundColor = "#FFFEF8"; // Couleur blanc cassé
+
+    document.querySelector("header h1").style.marginBottom = "4px";
+
+    document.querySelector("#logoContainer > span").style.color = "#93532F"; // Couleur orange sombre
+
+    const linksNav = document.querySelectorAll("nav a");
+    linksNav.forEach(link => {
+        link.style.textDecoration = "none";
+        link.style.color = "inherit";
+    });
+
+    // document.querySelector("li:hover").style.fontWeight = "600";
+    const liElements = document.querySelectorAll("li");
+    liElements.forEach(link => {
+        link.addEventListener("mouseenter", () => {
+            link.style.fontWeight = "600";
+        });
+    link.addEventListener("mouseleave", () => {
+            link.style.fontWeight = "normal";
+        });
+    });
+
+
+    document.querySelector("li img").style.width = "22px";
+
+    document.querySelector("main").style.position = "relative";
+
+    document.getElementById("nav__login").style.cursor = "pointer";
+
+    document.getElementById("portfolioTitle").style.marginTop = "130px";
+
+    const category = document.querySelector(".category");
+    category.style.textAlign = "center";
+    category.style.margin = "auto";
+    category.style.marginBottom = "50px"; // STRANGE
+}
+
 async function mainFunc () {
     /* Variables pour gestion des closures */
     let categorySelected = 0; // categorie choisi ( 0 par défaut )
     let fetchedCards = []; // liste des cards ( image + desc )
     let cardsToDisplay = [];
     let main = null; // section_main
-    let categoryContainer = null;
+    let category = null;
     let modalGalleryContainer = null;
-    let galleryContainer = null;
+    let gallery = null;
     let login = null; // fenêtre de login
     let emailInput = null;
     let passwordInput = null;
@@ -23,19 +65,18 @@ async function mainFunc () {
     // const offWhiteColor =   "#FFFEF8"; // Couleur blanc cassé
     // const greyColor =       "#A7A7A7"; // Couleur grise
 
-// callage...
-document.getElementById("portfolioTitle").style["margin-top"] = "130px";
+cssTweak();
 
 // Affichage des cards du portfolio
 function displayPortfolioCards (cards) {
-    galleryContainer = document.querySelector(".galleryContainer");
+    gallery = document.querySelector(".gallery");
 
     // cleanGallery
-    galleryContainer.innerHTML = "";
+    gallery.innerHTML = "";
 
     cards.forEach(item => {
         const card = document.createElement("figure");
-        galleryContainer.appendChild(card);
+        gallery.appendChild(card);
 
         const img = document.createElement("img");
         img.src = item.imageUrl;
@@ -176,9 +217,9 @@ try {
         categoryMapping["0"] = "Tous";
 
         // création des boutons de catégorie
-        categoryContainer = document.querySelector(".categoryContainer");
+        category = document.querySelector(".category");
         for (let i = 0; i < Object.keys(categoryMapping).length; i++) {
-            const button = createButton(categoryContainer, null, categoryMapping[i]);
+            const button = createButton(category, null, categoryMapping[i]);
 
             button.addEventListener("click", () => {
                 categorySelected = i;
@@ -275,30 +316,6 @@ function displayLoginWindow () {
     const loginButton = createButton(login, "180px", "Se connecter", true);
     loginButton.style.height = "51px";
     loginButton.style.fonSize = "14px";
-    // const loginButton = document.createElement("button");
-    // loginButton.type = "button"; // pour éviter le submit du button par défaut et le refresh de la page
-    // loginButton.classList.add("btn", "btn--selected");
-    // loginButton.style.width = "180px";
-    // loginButton.style.height = "51px";
-    // loginButton.style.cursor = "pointer";
-    // loginButton.style.innerText = "Se connecter";
-    // loginButton.fontSize = "14px";
-    // login.appendChild(loginButton);
-
-    // const loginButtonText = document.createElement("span");
-    // loginButtonText.innerText = "Se connecter";
-    // loginButtonText.style["font-size"] = "14px";
-    // loginButton.appendChild(loginButtonText);
-
-    // loginButton.addEventListener("mouseover", () => {
-    //     loginButton.classList.add("btn--pushed");
-    //     loginButton.classList.remove("btn--selected");
-    // });
-
-    // loginButton.addEventListener("mouseout", () => {
-    //     loginButton.classList.remove("btn--pushed");
-    //     loginButton.classList.add("btn--selected");
-    // });
 
     loginButton.addEventListener("click", () => {
         checkLogin();
@@ -441,7 +458,7 @@ function editMode () {
 
     // Masquer le modal de connexion et la sélection de catégorie, et afficher la section principale
     login.style.display = "none";
-    categoryContainer.style.display = "none";
+    category.style.display = "none";
     main.style.display = "block";
 }
 
