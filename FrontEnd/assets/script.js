@@ -1,69 +1,33 @@
-/* eslint-disable no-tabs */
-/* eslint-disable no-multiple-empty-lines */
-/* eslint-disable no-multi-spaces */
+/* eslint-disable */
 
-function cssTweak () {
-    document.querySelector("body").style.backgroundColor = "#FFFEF8"; // Couleur blanc cassé
+import { createButton } from "./gui/button.js";
+// import { displayLoginWindow } from "./gui/loginwindow.js";
+import { cssTweak } from "./csstweak.js";
+import * as color from "./gui/colors.js";
 
-    document.querySelector("header h1").style.marginBottom = "4px";
+import {
+        login, // <form>
+        displayLoginWindow, // the function
+        // emailInput, // <input>
+        // passwordInput, // <input>
+        loginErrorMessage, // <p>
+        loginButton // <button>
+    } from "./gui/loginwindow.js";
 
-    document.querySelector("#logoContainer > span").style.color = "#93532F"; // Couleur orange sombre
+import { modalWindow, modalGalleryContainer } from "./gui/modalwindow.js";
 
-    const linksNav = document.querySelectorAll("nav a");
-    linksNav.forEach(link => {
-        link.style.textDecoration = "none";
-        link.style.color = "inherit";
-    });
-
-    // document.querySelector("li:hover").style.fontWeight = "600";
-    const liElements = document.querySelectorAll("li");
-    liElements.forEach(link => {
-        link.addEventListener("mouseenter", () => {
-            link.style.fontWeight = "600";
-        });
-    link.addEventListener("mouseleave", () => {
-            link.style.fontWeight = "normal";
-        });
-    });
-
-
-    document.querySelector("li img").style.width = "22px";
-
-    document.querySelector("main").style.position = "relative";
-
-    document.getElementById("nav__login").style.cursor = "pointer";
-
-    document.getElementById("portfolioTitle").style.marginTop = "130px";
-
-    const category = document.querySelector(".category");
-    category.style.textAlign = "center";
-    category.style.margin = "auto";
-    category.style.marginBottom = "50px"; // STRANGE
-}
+const main = document.querySelector("main");
+export { main };
 
 async function mainFunc () {
     /* Variables pour gestion des closures */
     let categorySelected = 0; // categorie choisi ( 0 par défaut )
     let fetchedCards = []; // liste des cards ( image + desc )
     let cardsToDisplay = [];
-    let main = null; // section_main
     let category = null;
-    let modalGalleryContainer = null;
     let gallery = null;
-    let login = null; // fenêtre de login
-    let emailInput = null;
-    let passwordInput = null;
-    let loginErrorMessage = null; // <p> de message d'erreur
-    let userId = null; // login
-    let userToken = null; // login
-
-    // const orangeColor =     "#B1663C"; // Couleur orange
-    // const orangeColorDark = "#93532F"; // Couleur orange sombre
-    const greenColor =      "#1D6154"; // Couleur verte
-    const greenColorDark =  "#0E2F28"; // Couleur verte sombre
-    const whiteColor =      "#FFFFFF"; // Couleur blanche
-    // const offWhiteColor =   "#FFFEF8"; // Couleur blanc cassé
-    // const greyColor =       "#A7A7A7"; // Couleur grise
+    let userId = null;
+    let userToken = null;
 
 cssTweak();
 
@@ -86,21 +50,7 @@ function displayPortfolioCards (cards) {
         figcaption.textContent = item.title;
         card.appendChild(figcaption);
     });
-}
-
-// Mise à jour des boutons de catégorie avec le bon fond
-function updatePortfolioButtons () {
-    const allButton = document.querySelectorAll(".button");
-    allButton.forEach((button, index) => {
-        if (categorySelected === index) {
-            button.style.background = "#1D6154";
-            button.style.color = "#ffffff";
-        } else {
-            button.style.background = "#ffffff";
-            button.style.color = "#1D6154";
-        }
-    });
-}
+} // displayPortfolioCards (cards)
 
 // Filtres les cards en fonction de la categorie
 function updatePortfolioCards () {
@@ -109,252 +59,95 @@ function updatePortfolioCards () {
         cardsToDisplay = fetchedCards.filter(item => item.categoryId === categorySelected);
     }
     displayPortfolioCards(cardsToDisplay);
-}
+} // updatePortfolioCards ()
 
 function portfolioUpdate () {
-    updatePortfolioButtons();
+    // Mise à jour des boutons de catégorie avec le bon fond
+    const allButton = document.querySelectorAll(".button");
+    allButton.forEach((button, index) => {
+        if (categorySelected === index) {
+            button.style.background = color.green;
+            button.style.color = color.white;
+        } else {
+            button.style.background = color.white;
+            button.style.color = color.green;
+        }
+    });
+
+    // Mise à jours des cards
     updatePortfolioCards();
-}
+} // portfolioUpdate ()
 
-/*
-    - function createButton (container, width, text, reverseColor) -
-    container : the container where the button will be added (*required)
-    width : the width of the button
-    text : the text of the button
-    reverseColor : reverse de color of the button true/false
-*/
-function createButton (container, width = null, text = "Click!", reverseColor = false) {
-    // .height = "36px";
-    const button = document.createElement("button");
-    button.classList.add("button");
+async function fetchCards () {
+    try {
+        const responseWorks = await fetch("http://localhost:5678/api/works");
 
-    let primaryColor = whiteColor;
-    let secondaryColor = greenColor;
+        if (responseWorks.ok) { // 200-299
+            fetchedCards = await responseWorks.json();
 
-    if (reverseColor) {
-        primaryColor = greenColor;
-        secondaryColor = whiteColor;
-    }
-
-    button.style.background = primaryColor;
-    button.style.color = secondaryColor;
-
-    button.style.borderRadius = "60px";
-    button.style.border = "1px solid #1D6154";
-    button.style.padding = "8px 15px";
-    button.style.marginLeft = "15px";
-    button.style.width = width;
-    button.style.minWidth = "100px";
-    button.style.cursor = "pointer";
-    button.style.fontFamily = "Syne";
-    button.style.fontWeight = "700";
-    button.style.fontSize = "16px";
-    button.textContent = text; // ?? "Click!";
-
-    // gestion des comportements de la souris Click/Moove
-    let isMouseInside = false;
-    let isMouseDown = false;
-
-    button.addEventListener("mousedown", () => {
-        if (isMouseInside) {
-            button.style.background = greenColorDark;
-            button.style.color = whiteColor;
-            isMouseDown = true;
-        }
-    });
-
-    button.addEventListener("mouseup", () => {
-        if (isMouseDown) {
-            button.style.background = primaryColor;
-            button.style.color = secondaryColor;
-            isMouseDown = false;
-        }
-    });
-
-    button.addEventListener("mouseenter", () => {
-        if (isMouseDown) {
-            button.style.background = greenColorDark;
-            button.style.color = whiteColor;
-        }
-        isMouseInside = true;
-    });
-
-    button.addEventListener("mouseleave", () => {
-        if (isMouseDown) {
-            button.style.background = primaryColor;
-            button.style.color = secondaryColor;
-        }
-        isMouseInside = false;
-    });
-
-     // assure le bon comportement du bouton si on click et glisse en dehors
-    // document.addEventListener("mouseup", () => {
-    //     hasClicked = false;
-    //     if (!reverseColor) {
-    //         updatePortfolioButtons();
-    //     } else {
-    //         button.style.background = "#1D6154";
-    //         button.style.color = "#ffffff";
-    //     }
-    // });
-
-    container.appendChild(button);
-
-    return button;
-}
-
-try {
-    const responseWorks = await fetch("http://localhost:5678/api/works");
-
-    if (responseWorks.ok) { // 200-299
-        fetchedCards = await responseWorks.json();
-
-        // création de la liste des catégories
-        const categoryMapping = {};
-        fetchedCards.forEach(item => {
-            categoryMapping[item.category.id] = item.category.name;
-        });
-        categoryMapping["0"] = "Tous";
-
-        // création des boutons de catégorie
-        category = document.querySelector(".category");
-        for (let i = 0; i < Object.keys(categoryMapping).length; i++) {
-            const button = createButton(category, null, categoryMapping[i]);
-
-            button.addEventListener("click", () => {
-                categorySelected = i;
-                portfolioUpdate();
+            // création de la liste des catégories
+            const categoryMapping = {};
+            fetchedCards.forEach(item => {
+                categoryMapping[item.category.id] = item.category.name;
             });
+            categoryMapping["0"] = "Tous";
+
+            // création des boutons de catégorie
+            category = document.querySelector(".category");
+            for (let i = 0; i < Object.keys(categoryMapping).length; i++) {
+                const button = createButton(category, null, categoryMapping[i]);
+                button.style.marginLeft = "15px";
+                button.addEventListener("click", () => {
+                    categorySelected = i;
+                    portfolioUpdate();
+                });
+            }
+        } else {
+            console.error("La requête a échoué. Code : " + responseWorks.status);
         }
-    } else {
-        console.error("La requête a échoué. Code : " + responseWorks.status);
+        // activation forcée du premier portfolioUpdate au chargement
+        portfolioUpdate();
+    } catch (error) {
+        console.error("Une erreur est survenue : " + error);
     }
-    // activation forcée du premier portfolioUpdate au chargement
-    portfolioUpdate();
-} catch (error) {
-    console.error("Une erreur est survenue : " + error);
 }
+fetchCards();
 
 /* création de la fenêtre login */
 const linkLogin = document.getElementById("nav__login");
-linkLogin.addEventListener("click", () => displayLoginWindow());
+linkLogin.addEventListener("click", () => {
+    displayLoginWindow();
 
-function displayLoginWindow () {
-    main = document.querySelector("main");
-    // hide the main section ( keep the <header> and <footer> )
-    main.style.display = "none";
-
-    // création section LOGIN
-    login = document.createElement("form");
-    const loginContainer = document.getElementById("loginContainer");
-    login.id = "login";
-    login.style.gap = "30px";
-    login.style.top = "130px";
-    login.style.height = "872px";
-    // login.style.display = "none";
-    login.style.position = "relative";
-    loginContainer.appendChild(login);
-
-    // TITRE
-    const loginTitle = document.createElement("h2");
-    loginTitle.innerText = "Log In";
-    login.appendChild(loginTitle);
-
-    // <p> pour message d'erreur
-    loginErrorMessage = document.createElement("p");
-    loginErrorMessage.style.color = "red";
-    login.appendChild(loginErrorMessage);
-
-    // box EMAIL
-    const emailContainer = document.createElement("div");
-    emailContainer.style.display = "flex";
-    emailContainer.style["flex-direction"] = "column";
-    emailContainer.style["align-items"] = "flex-start";
-    emailContainer.style.gap = "7px";
-    login.appendChild(emailContainer);
-
-    // input EMAIL
-    const emailLabel = document.createElement("label");
-    emailLabel.innerText = "E-mail";
-    emailLabel.style["font-weight"] = "500";
-    emailContainer.appendChild(emailLabel);
-    emailInput = document.createElement("input");
-    emailInput.id = "login_email_id";
-    emailInput.type = "email";
-    emailInput.style["font-size"] = "20px";
-    emailInput.style["text-align"] = "center";
-    emailInput.style.width = "379px";
-    emailInput.style.height = "51px";
-    emailInput.style.border = "0px";
-    emailInput.style.filter = "drop-shadow(0px 3px 15px rgba(0, 0, 0, 0.1))";
-    emailContainer.appendChild(emailInput);
-
-    // box PASSWORD
-    const passwordContainer = document.createElement("div");
-    passwordContainer.style.display = "flex";
-    passwordContainer.style["flex-direction"] = "column";
-    passwordContainer.style["align-items"] = "flex-start";
-    passwordContainer.style.gap = "7px";
-    login.appendChild(passwordContainer);
-    // input PASSWORD
-    const passwordLabel = document.createElement("label");
-    passwordLabel.innerText = "Mot de passe";
-    passwordLabel.style["font-weight"] = "500";
-    passwordContainer.appendChild(passwordLabel);
-    passwordInput = document.createElement("input");
-    passwordInput.id = "login_password_id";
-    passwordInput.type = "password";
-    passwordInput.style["font-size"] = "20px";
-    passwordInput.style["text-align"] = "center";
-    passwordInput.style.width = "379px";
-    passwordInput.style.height = "51px";
-    passwordInput.style.border = "0px";
-    passwordInput.style.filter = "drop-shadow(0px 3px 15px rgba(0, 0, 0, 0.1))";
-    passwordContainer.appendChild(passwordInput);
-
-    // création du BOUTTON
-    const loginButton = createButton(login, "180px", "Se connecter", true);
-    loginButton.style.height = "51px";
-    loginButton.style.fonSize = "14px";
-
-    loginButton.addEventListener("click", () => {
-        checkLogin();
+    loginButton.addEventListener("click", (event) => {
+        checkLogin(loginErrorMessage);
     });
+});
 
-    // Lien mot de passe oublié
-    const linkPwdForgotten = document.createElement("a");
-    linkPwdForgotten.setAttribute("href", "#");
-    linkPwdForgotten.innerText = "Mot de passe oublié";
-    linkPwdForgotten.style.color = "inherit";
-    linkPwdForgotten.style["font-weight"] = "500";
-    login.appendChild(linkPwdForgotten);
+// displayLoginWindow(main);
 
-    // Affiche la section
-    login.style.display = "flex";
-    login.style["flex-direction"] = "column";
-    login.style["align-items"] = "center";
-}
-
-async function checkLogin () {
-    // Valeurs pour les tests
+async function checkLogin (loginErrorMessage) {
+    // Valeurs pour tests
     const userData = {
         email: "sophie.bluel@test.tld",
         password: "S0phie"
     };
-
     // const userData = {
     //     email: emailInput.value,
     //     password: passwordInput.value
-    // }
+    // };
 
     // Vérification de la bonne forme de l'email
+    if (userData.email.trim() === "") { // Test champ vide
+        loginErrorMessage.innerText = "Le champ email ne peut pas être vide";
+        return;
+    }
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,5}$/;
-    if (!emailRegex.test(userData.email)) {
+    if (!emailRegex.test(userData.email)) { // Test conformormité au Regex
         loginErrorMessage.innerText = "Entrez une adresse E-mail valide";
         return;
     }
 
-    // Vérification de la bonne forme du mot de passe
+    // Vérification de la bonne forme du mot de passe ( pourrait être un peu plus travaillé )
     if (userData.password.length < 5) {
         loginErrorMessage.innerText = "Le mot de passe doit contenir au moins 5 caractères";
         return;
@@ -375,6 +168,14 @@ async function checkLogin () {
             userId = response.userId;
             userToken = response.token;
 
+            window.localStorage.setItem("userID", userId);
+            window.localStorage.setItem("tokenID", userToken);
+
+            // const newUserId = window.localStorage.getItem("userID");
+            // const newUserToken = window.localStorage.getItem("tokenID");
+
+            // window.localStorage.removeItem("key");
+
             console.log("Welcome " + userId + ", you have the token : " + userToken);
 
             editMode();
@@ -392,7 +193,7 @@ async function checkLogin () {
     } catch (error) {
         console.error("Une erreur est survenue ( " + error + " )");
     }
-}
+} // checkLogin ()
 
 function editMode () {
     //  Ajout d'une bannière au dessus de l'header
@@ -417,6 +218,7 @@ function editMode () {
         banner.appendChild(bannerText);
 
     // changement de comportement du lien login/logout de la barre de nav du header
+    // ------------------- Y SERAIT BIEN DE FAIRE UNE function logInOut ()
     const navLogin = document.getElementById("nav__login");
     navLogin.innerText = "logout";
     // ...Ajouter des actions pour se déconnecter...
@@ -454,75 +256,19 @@ function editMode () {
             linkContainer.appendChild(portfolioBannerLink);
 
     // juste pour test
-    linkContainer.addEventListener("click", () => modalWindow());
+    linkContainer.addEventListener("click", () => {
+            modalWindow();
+            updateModalCards(fetchedCards);
+        });
 
     // Masquer le modal de connexion et la sélection de catégorie, et afficher la section principale
+    console.log(login);
     login.style.display = "none";
     category.style.display = "none";
     main.style.display = "block";
-}
+} // editMode ()
 
-function modalWindow () {
-    // Création du conteneur du modal
-    const modalContainer = document.getElementById("modalContainer");
-    modalContainer.style["z-index"] = "9999";
-    modalContainer.style.Height = "688px";
-    modalContainer.style.maxWidth = "630px";
-    modalContainer.style.backgroundColor = "#fFf";
-    modalContainer.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.25)";
-    modalContainer.style.borderRadius = "10px";
-    modalContainer.style.position = "absolute";
-    modalContainer.style.margin = "auto";
-    modalContainer.style.top = "400px";
-    modalContainer.style.left = "0";
-    modalContainer.style.right = "0";
-
-    // Bouton de fermeture de la modal
-    const modalCloseButton = document.createElement("img");
-    modalContainer.appendChild(modalCloseButton);
-
-    // Titre
-    const modalTitle = document.createElement("h3");
-    modalTitle.innerText = "Galerie photo";
-    modalTitle.style.textAlign = "center";
-    modalTitle.style.fontFamily = "Work Sans";
-    modalTitle.style.fontSize = "26px";
-    modalTitle.style.marginTop = "60px";
-    modalContainer.appendChild(modalTitle);
-
-    // Conteneur de la gallerie d'images
-    modalGalleryContainer = document.createElement("div");
-    modalGalleryContainer.style.display = "grid";
-    modalGalleryContainer.style["grid-template-columns"] = "1fr 1fr 1fr 1fr 1fr";
-    modalGalleryContainer.style["grid-column-gap"] = "20px";
-    modalGalleryContainer.style["grid-row-gap"] = "20px";
-    modalGalleryContainer.style.margin = "60px 105px";
-    modalContainer.appendChild(modalGalleryContainer);
-
-    // Trait horizontal de de séparation
-    const modalHorizontalLine = document.createElement("div");
-    modalHorizontalLine.style.width = "420px";
-    modalHorizontalLine.style.height = "20px";
-    modalHorizontalLine.style.borderBottom = "1px solid #B3B3B3";
-    modalHorizontalLine.style.margin = "0 auto";
-    modalContainer.appendChild(modalHorizontalLine);
-
-    // Bouton de submission du formulaire
-    const modalSubmitButton = document.createElement("button");
-    modalSubmitButton.style.margin = "30px 0";
-    modalSubmitButton.style.position = "relative";
-    modalSubmitButton.style.left = "50%";
-    modalSubmitButton.style.right = "50%";
-    modalContainer.appendChild(modalSubmitButton);
-
-    updateModalCards(fetchedCards);
-
-    // juste pour test
-    modalSubmitButton.innerText = "Click!";
-    modalSubmitButton.addEventListener("click", () => { modalContainer.style.display = "none"; });
-}
-
-// Affichage les images dans la gallerie du modal en fonction de cardsToDisplay
+// Affichage les images dans la gallerie du modal en fonction de cardsToDisplay ( donc idem à l'autre gal )
 function updateModalCards (cards) {
     // clean gallery
     modalGalleryContainer.innerHTML = "";
@@ -556,7 +302,7 @@ function updateModalCards (cards) {
                 trashIcon.style.width = "9px";
                 iconContainer.appendChild(trashIcon);
     });
-}
+} // updateModalCards (cards)
 
 function deleteCard (item) {
     // cardsToDisplay = cardsToDisplay.filter(card => card.id !== item.id); // L'élégance...
@@ -569,6 +315,6 @@ function deleteCard (item) {
     // refresh gallerieS
     updateModalCards();
     updatePortfolioCards();
-}
+} // deleteCard (item)
 } // mainFunc()
 mainFunc();
