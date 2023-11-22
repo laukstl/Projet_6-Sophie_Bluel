@@ -1,25 +1,19 @@
 import { createButton } from "./button.js";
 
-import { main } from "../script.js";
+export let loginContainer, emailInput, passwordInput, loginErrorMessage, loginButton;
 
-let emailInput = null;
-let passwordInput = null;
-let loginErrorMessage = null;
-let loginButton = null;
-let login = null;
-
-export function displayLoginWindow () {
-    // hide the main section ( keep the <header> and <footer> )
-    main.style.display = "none";
-
+function buildLoginWindow () {
     // création section LOGIN
-    login = document.createElement("form");
-    const loginContainer = document.getElementById("loginContainer");
+    const login = document.createElement("form");
+    loginContainer = document.getElementById("loginContainer");
+    loginContainer.style.display = "none";
     login.id = "login";
+    login.style.display = "flex";
+    login.style["flex-direction"] = "column";
+    login.style["align-items"] = "center";
     login.style.gap = "30px";
     login.style.top = "130px";
     login.style.height = "872px";
-    // login.style.display = "none";
     login.style.position = "relative";
     loginContainer.appendChild(login);
 
@@ -82,7 +76,7 @@ export function displayLoginWindow () {
     // Bouton de submit - section LOGIN
     loginButton = createButton(login, "180px", "Se connecter", true);
     loginButton.style.height = "51px";
-    loginButton.style.fonSize = "14px";
+    loginButton.style.fontSize = "14px";
 
     // Lien mot de passe oublié - section LOGIN
     const linkPwdForgotten = document.createElement("a");
@@ -91,11 +85,5 @@ export function displayLoginWindow () {
     linkPwdForgotten.style.color = "inherit";
     linkPwdForgotten.style["font-weight"] = "500";
     login.appendChild(linkPwdForgotten);
-
-    // Affiche toute la section LOGIN
-    login.style.display = "flex";
-    login.style["flex-direction"] = "column";
-    login.style["align-items"] = "center";
-} // displayLoginWindow ()
-
-    export { login, emailInput, passwordInput, loginErrorMessage, loginButton };
+} // buildLoginWindow ()
+buildLoginWindow();
