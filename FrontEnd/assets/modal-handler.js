@@ -9,9 +9,18 @@ import {
 } from "./modal-ui.js";
 
 import {
-    updatePortfolioCards, // func
-    cardsToDisplay // func
+    generalVar
 } from "./script.js";
+
+// import {
+//     updatePortfolioCards // func
+// } from "./main-handler.js";
+
+// const cardsList = generalVar.cardsList;
+
+// console.log("modal-handler : ", cardsList);
+
+// const cardsToDisplay = cardsList;
 
 // Need ajouter les EventListener ET les retirer correctement
 modalReturnButton.addEventListener("click", () => displayPhotoGallery()); // flèche de retour
@@ -49,11 +58,18 @@ export function displayModal () {
     // apparement, js propage l'eventListener en même temps qu'il affiche la fenêtre...
     // et comme on fait apparaitre la fenêtre avec un click, et qu'un click la ferme, ... clickclick
     setTimeout(() => document.addEventListener("click", modalClickHandler), 1); // 1 ms
+
+    // stopPropagation permet d'éviter hideModal() (de modalClickHandler()) si on click sur trashIconContainer ou trashIcon
+    // !modalWindow.contains(event.target) dans modalClickHandler() n'était pas suffisant
+    modalWindow.addEventListener('click', function (event) { event.stopPropagation(); });
+
+    modalCloseButton.addEventListener('click', () => hideModal());
+
     document.addEventListener("keydown", modalKeydownHandler);
 }
 
 export function hideModal () {
-    console.log("Hiding Modal");
+    console.log("hideModal", "Hiding Modal");
     document.removeEventListener("click", modalClickHandler);
     document.removeEventListener("keydown", modalKeydownHandler);
 
@@ -61,8 +77,11 @@ export function hideModal () {
 }
 
 function modalClickHandler (event) {
-    console.log(event);
-    if ((event.target !== modalWindow && !modalWindow.contains(event.target)) || event.target === modalCloseButton) {
+    console.log("modalClickHandler - ", event);
+    if (
+        event.target !== modalWindow
+        // event.target !== modalWindow || event.target === modalCloseButton
+    ) {
         hideModal();
     }
 }
@@ -75,6 +94,7 @@ function modalKeydownHandler (event) {
 
 // ***************************************
 
+let trashIconContainer = null;
 // Affichage les images dans la gallerie du modal en fonction de cardsToDisplay ( donc idem à l'autre gal )
 export function updateModalCards (cards) {
     // clean gallery
@@ -90,7 +110,7 @@ export function updateModalCards (cards) {
             img.style.width = "100%";
             card.appendChild(img);
 
-            const trashIconContainer = document.createElement("a");
+            trashIconContainer = document.createElement("a");
             trashIconContainer.style.position = "absolute";
             trashIconContainer.style.top = "5px";
             trashIconContainer.style.right = "5px";

@@ -1,4 +1,6 @@
-import { fetchedCards } from "./script.js";
+import {
+    generalVar
+} from "./script.js";
 
 import {
     updateModalCards, // func
@@ -6,7 +8,11 @@ import {
     // hideModal // func
 } from "./modal-handler.js";
 
+// const cardsList = generalVar.cardsList;
+
 export let banner, portfolioBannerLinkContainer;
+
+// -- ui du mode Edition ----------------------------------------------
 
 function editMode () {
     //  Ajout d'une bannière au dessus de l'header
@@ -62,9 +68,9 @@ function editMode () {
             portfolioBannerLink.style.color = "inherit";
             portfolioBannerLinkContainer.appendChild(portfolioBannerLink);
 
-    // juste pour test
+    // update and display the modal
     portfolioBannerLinkContainer.addEventListener("click", () => {
-            updateModalCards(fetchedCards);
+            updateModalCards(cardsList);
             displayModal();
         });
 }
