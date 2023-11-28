@@ -1,3 +1,4 @@
+/* eslint-disable no-return-assign */
 import * as color from "./gui/colors.js";
 import { createButton } from "./button.js";
 
@@ -19,44 +20,46 @@ import {
     generalVar
 } from "./script.js";
 
-export function doSomething () {
-// let cardsList;
-const cardsList = generalVar.cardsList;
-
-// console.log("main-handler : ", cardsList); // ****************************************
-
 // container central ( entre le header et le footer )
 const main = document.querySelector("main");
 
-let categorySelected = 0; // categorie choisi ( 0 par défaut )
+let categorySelected = 0; // categorie choisi ( 0 ("Tous") par défaut )
 let category = null;
 let gallery = null;
-// let cardsToDisplay = cardsList;
+let cardsList;
+let categoryButtons;
 
-// export function main_handler (cardsToDisplay) {
+export function initMainPage (cardsList) {
+    categoryMaker(generalVar.cardsList);
+    updatePortfolioCards(generalVar.cardsList);
+}
+
 // -- Affichage des categories du portfolio ---------------------------------------------
-async function categoryMaker () {
-    // cardsList = generalVar.cardsList;
-    console.log("main-handler - categoryMaker", cardsList); // **********************************************
+
+export function categoryMaker () {
+    cardsList = generalVar.cardsList;
+
     // création de la liste des catégories
     const categoryMapping = {};
-    cardsList.forEach(item => {
-        categoryMapping[item.category.id] = item.category.name;
-    });
+    cardsList.forEach(item => categoryMapping[item.category.id] = item.category.name);
     categoryMapping["0"] = "Tous";
+    // Object { 0: "Tous", 2: "Appartements", 3: "Hotels & restaurants" }
 
     // création des boutons de catégorie
     category = document.querySelector(".category");
-    for (let i = 0; i < Object.keys(categoryMapping).length; i++) {
-        const button = createButton(category, null, categoryMapping[i]);
+    console.log("categoryMapping : ", categoryMapping);
+    for (const k in categoryMapping) {
+        const button = createButton(category, null, categoryMapping[k]);
         button.style.marginLeft = "15px";
+        button.classList.add("categoryButtons");
         button.addEventListener("click", () => {
-            categorySelected = i;
+            categorySelected = k;
             portfolioUpdate();
         });
     }
+
+    categoryButtons = document.querySelectorAll(".categoryButtons");
 }
-categoryMaker();
 
 // -- Affichage des cards du portfolio --------------------------------------------------
 
@@ -81,21 +84,18 @@ function displayPortfolioCards (cards) {
 } // displayPortfolioCards (cards)
 
 // -- Gestion du comportement du portfolio ----------------------------------------------
-let cardsToDisplay;
-async function updatePortfolioCards () {
-    console.log("main-handler - updatePortfolioCards()", cardsList);
-    // cardsToDisplay = fetchedCards;
+export function updatePortfolioCards (cardsToDisplay) {
     if (categorySelected !== 0) {
         cardsToDisplay = cardsList.filter(item => item.categoryId === categorySelected);
+    } else {
+        cardsToDisplay = generalVar.cardsList;
     }
     displayPortfolioCards(cardsToDisplay);
 } // updatePortfolioCards ()
-updatePortfolioCards();
 
 function portfolioUpdate () {
     // mise à jour des boutons de la section "category" avec le bon fond
-    const allButton = document.querySelectorAll(".button");
-    allButton.forEach((button, index) => {
+    categoryButtons.forEach((button, index) => {
         if (categorySelected === index) {
             button.style.background = color.green;
             button.style.color = color.white;
@@ -104,12 +104,9 @@ function portfolioUpdate () {
             button.style.color = color.green;
         }
     });
-
     // mise à jours des cards
     updatePortfolioCards();
 } // portfolioUpdate ()
-// activation forcée du premier portfolioUpdate au chargement
-portfolioUpdate();
 
 // -- Gestion du comportement du lien Login/Logout --------------------------------------
 
@@ -130,7 +127,7 @@ linkLogin.addEventListener("click", () => {
                 category.style.display = "none";
                 main.style.display = "block";
             } else {
-                // ***************************************
+                // TODO: Message d'erreur ?
             }
         });
     } else { // LogOut
@@ -145,8 +142,7 @@ linkLogin.addEventListener("click", () => {
             window.localStorage.removeItem("userID");
             window.localStorage.removeItem("tokenID");
         } catch (error) {
-            console.log("Unexpected error: " + error); // ********************************
+            console.log("Unexpected error: " + error); // REVIEW:
         }
     }
 });
-}

@@ -1,22 +1,18 @@
-import { cssTweak } from "./csstweak.js";
+import {
+    initMainPage
+} from "./main-handler.js";
 
-import { doSomething } from "./main-handler.js";
-
+// variables générales
 export const generalVar = { cardsList: [] };
 
-// Apply some css tyle
-cssTweak();
-
-export async function fetchCards () {
+async function fetchCards () {
     try {
         const responseWorks = await fetch("http://localhost:5678/api/works");
 
         if (responseWorks.ok) { // 200-299
             generalVar.cardsList = await responseWorks.json();
 
-            console.log("script.js cardsList : ", generalVar.cardsList);
-
-            doSomething();
+            initMainPage(generalVar.cardsList);
         } else {
             console.error("La requête a échoué. Code : " + responseWorks.status);
         }
@@ -25,5 +21,3 @@ export async function fetchCards () {
     }
 } // fetchCards ()
 fetchCards();
-
-console.log("script.js end file : ", generalVar.cardsList);

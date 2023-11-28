@@ -12,15 +12,9 @@ import {
     generalVar
 } from "./script.js";
 
-// import {
-//     updatePortfolioCards // func
-// } from "./main-handler.js";
-
-// const cardsList = generalVar.cardsList;
-
-// console.log("modal-handler : ", cardsList);
-
-// const cardsToDisplay = cardsList;
+import {
+    updatePortfolioCards // func
+} from "./main-handler.js";
 
 // Need ajouter les EventListener ET les retirer correctement
 modalReturnButton.addEventListener("click", () => displayPhotoGallery()); // flèche de retour
@@ -93,10 +87,11 @@ function modalKeydownHandler (event) {
 }
 
 // ***************************************
-
+let cardsToDisplay;
 let trashIconContainer = null;
 // Affichage les images dans la gallerie du modal en fonction de cardsToDisplay ( donc idem à l'autre gal )
 export function updateModalCards (cards) {
+    cardsToDisplay = generalVar.cardsList;
     // clean gallery
     modalGallery.innerHTML = "";
 
@@ -131,15 +126,58 @@ export function updateModalCards (cards) {
     });
 } // updateModalCards (cards)
 
-function deleteCard (item) {
-    // cardsToDisplay = cardsToDisplay.filter(card => card.id !== item.id); // L'élégance...
-    cardsToDisplay.forEach((cards, index) => {
-        if (item.id === cards.id) {
-            cardsToDisplay.splice(index, 1);
-        }
-    });
+async function deleteCard (item) {
+    // id
 
+    // try {
+    //     const response = await fetch(`http://localhost:5678/api/works/${id}`, {
+    //         method: "DELETE",
+    //         headers: {
+    //             Authorization: `Bearer ${UserToken}`
+    //         }
+    //     });
+    //     if (response.ok) {
+
+    //     } else {
+    //         console.log("deleteItem() error : ", response);
+    //     }
+    // } catch (error) {
+    //     console.log("Erreur de serveur : " + error);
+    // }
+
+    // // cardsToDisplay = cardsToDisplay.filter(card => card.id !== item.id); // L'élégance...
+    // cardsToDisplay.forEach((cards, index) => {
+    //     if (item.id === cards.id) {
+    //         const response = deleteItem(item.id);
+
+    //         if (response) {
+    //             cardsToDisplay.splice(index, 1);
+    //         }
+    //         } else {
+    //             console.log("Erreur lors de la suppression de l'image.");
+    //         }
+    // });
     // refresh gallerieS
     updateModalCards();
     updatePortfolioCards();
 } // deleteCard (item)
+
+// async function deleteItem (id) {
+    // const UserToken = window.localStorage.getItem("tokenID");
+
+    // try {
+    //     const response = await fetch(`http://localhost:5678/api/works/${id}`, {
+    //         method: "DELETE",
+    //         headers: {
+    //             Authorization: `Bearer ${UserToken}`
+    //         }
+    //     });
+    //     if (response.ok) {
+    //         return true;
+    //     } else {
+    //         console.log("deleteItem() error : ", response);
+    //     }
+    // } catch (error) {
+    //     console.log("Erreur de serveur : " + error);
+    // }
+// }

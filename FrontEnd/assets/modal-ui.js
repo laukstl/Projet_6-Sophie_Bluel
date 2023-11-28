@@ -3,6 +3,7 @@ import { createButton } from "./button.js";
 export let modalGallery, modalWindow, modalCloseButton, modalAddPhoto, modalReturnButton, modalTitle, modalSubmitButton;
 
 export function buildModalWindow () {
+    console.log("buildModalWindow()");
     // -- Container global de la modale -------------------------------------------------
 
     modalWindow = document.getElementById("modalWindow");

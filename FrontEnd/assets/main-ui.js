@@ -1,3 +1,5 @@
+import { cssTweak } from "./csstweak.js";
+
 import {
     generalVar
 } from "./script.js";
@@ -5,10 +7,10 @@ import {
 import {
     updateModalCards, // func
     displayModal // func
-    // hideModal // func
 } from "./modal-handler.js";
 
-// const cardsList = generalVar.cardsList;
+// Apply some css tyle
+cssTweak();
 
 export let banner, portfolioBannerLinkContainer;
 
@@ -70,7 +72,7 @@ function editMode () {
 
     // update and display the modal
     portfolioBannerLinkContainer.addEventListener("click", () => {
-            updateModalCards(cardsList);
+            updateModalCards(generalVar.cardsList);
             displayModal();
         });
 }
