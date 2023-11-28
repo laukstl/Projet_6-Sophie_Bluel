@@ -24,40 +24,33 @@ import {
 const main = document.querySelector("main");
 
 let categorySelected = 0; // categorie choisi ( 0 ("Tous") par défaut )
-let category = null;
-let gallery = null;
-let cardsList;
-let categoryButtons;
+let category, gallery, cardsList, categoryList, categoryButtons;
 
-export function initMainPage (cardsList) {
-    categoryMaker(generalVar.cardsList);
-    updatePortfolioCards(generalVar.cardsList);
+export function initMainPage () {
+    buildPortfolioCategoryButtons();
+    updatePortfolioCategoryButtons();
+    updatePortfolioCardsList(generalVar.cardsList);
 }
 
 // -- Affichage des categories du portfolio ---------------------------------------------
 
-export function categoryMaker () {
-    cardsList = generalVar.cardsList;
+export function buildPortfolioCategoryButtons () {
+    categoryList = generalVar.categoryList;
 
-    // création de la liste des catégories
-    const categoryMapping = {};
-    cardsList.forEach(item => categoryMapping[item.category.id] = item.category.name);
-    categoryMapping["0"] = "Tous";
-    // Object { 0: "Tous", 2: "Appartements", 3: "Hotels & restaurants" }
+    // ajout du bouton "Tous" à la liste des catégories du portfolio
+    categoryList.unshift({ id: "0", name: "Tous" });
 
-    // création des boutons de catégorie
+    // création des boutons des catégories du portfolio
     category = document.querySelector(".category");
-    console.log("categoryMapping : ", categoryMapping);
-    for (const k in categoryMapping) {
-        const button = createButton(category, null, categoryMapping[k]);
+    for (const k in categoryList) {
+        const button = createButton(category, null, categoryList[k].name);
         button.style.marginLeft = "15px";
         button.classList.add("categoryButtons");
         button.addEventListener("click", () => {
-            categorySelected = k;
-            portfolioUpdate();
+            categorySelected = categoryList[k].id;
+            updatePortfolioCategoryButtons();
         });
     }
-
     categoryButtons = document.querySelectorAll(".categoryButtons");
 }
 
@@ -84,18 +77,18 @@ function displayPortfolioCards (cards) {
 } // displayPortfolioCards (cards)
 
 // -- Gestion du comportement du portfolio ----------------------------------------------
-export function updatePortfolioCards (cardsToDisplay) {
+export function updatePortfolioCardsList (cardsToDisplay) {
     if (categorySelected !== 0) {
         cardsToDisplay = cardsList.filter(item => item.categoryId === categorySelected);
     } else {
         cardsToDisplay = generalVar.cardsList;
     }
     displayPortfolioCards(cardsToDisplay);
-} // updatePortfolioCards ()
+} // updatePortfolioCardsList ()
 
-function portfolioUpdate () {
+function updatePortfolioCategoryButtons () {
     // mise à jour des boutons de la section "category" avec le bon fond
-    categoryButtons.forEach((button, index) => {
+    categoryButtons.forEach((button, index) => { // REVIEW: PAS D'INDEX DIDIOU
         if (categorySelected === index) {
             button.style.background = color.green;
             button.style.color = color.white;
@@ -105,8 +98,8 @@ function portfolioUpdate () {
         }
     });
     // mise à jours des cards
-    updatePortfolioCards();
-} // portfolioUpdate ()
+    updatePortfolioCardsList();
+} // updatePortfolioCategoryButtons ()
 
 // -- Gestion du comportement du lien Login/Logout --------------------------------------
 

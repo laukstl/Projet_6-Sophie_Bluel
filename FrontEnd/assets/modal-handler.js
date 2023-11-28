@@ -13,7 +13,7 @@ import {
 } from "./script.js";
 
 import {
-    updatePortfolioCards // func
+    updatePortfolioCardsList // func
 } from "./main-handler.js";
 
 // Need ajouter les EventListener ET les retirer correctement
@@ -159,7 +159,7 @@ async function deleteCard (item) {
     // });
     // refresh gallerieS
     updateModalCards();
-    updatePortfolioCards();
+    updatePortfolioCardsList();
 } // deleteCard (item)
 
 // async function deleteItem (id) {
