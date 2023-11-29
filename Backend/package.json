@@ -23,6 +23,8 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.23.5",
+    "@babel/preset-env": "^7.23.5",
     "nodemon": "^2.0.15"
   }
 }

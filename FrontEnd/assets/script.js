@@ -1,54 +1,54 @@
+// REVIEW: Séparation des préoccupations : chaque fonction ou module a une seule responsabilité et suit le principe de la séparation des préoccupations.
 import {
     initMainPage
 } from "./main-handler.js";
+
+import {
+    displayErrorMessage
+} from "./main-ui.js";
 
 // variables générales
 export const generalVar = { cardsList: [], categoryList: [] };
 
 async function fetchCards () {
     try {
-        const responseWorks = await fetch("http://localhost:5678/api/works");
+        const worksResponse = await fetch("http://localhost:5678/api/works");
 
-        if (responseWorks.ok) { // 200-299
-            generalVar.cardsList = await responseWorks.json();
+        if (worksResponse.ok) { // 200-299
+            testWorksResponse(worksResponse);
         } else {
-            displayErrorMessage("La requête de récupération de la liste des images a échoué. Code : " + responseWorks.status);
+            displayErrorMessage(worksResponse.status, "La requête de récupération de la liste des images a échoué.");
             return;
         }
-    } catch (error) {
-        displayErrorMessage("Erreur du serveur : impossible dé récupérer la liste des images (" + error + ")");
-    }
 
-    try {
-        const responseCategorie = await fetch("http://localhost:5678/api/categories");
+        const categorieResponse = await fetch("http://localhost:5678/api/categories");
 
-        if (responseCategorie.ok) { // 200-299
-            generalVar.categoryList = await responseCategorie.json();
+        if (categorieResponse.ok) { // 200-299
+            await testCategorieResponse(categorieResponse);
+
+            // Si tout est ok, lance l'init de la page
+            initMainPage();
         } else {
-            displayErrorMessage("La requête de récupération de la liste des catégories a échoué. Code : " + responseCategorie.status);
-            return;
+            displayErrorMessage("La requête de récupération de la liste des catégories a échoué. Code : " + categorieResponse.status);
         }
     } catch (error) {
-        displayErrorMessage("Erreur du serveur : Impossible de récupérer la liste des catégories (" + error + ")");
+        displayErrorMessage("Erreur du serveur", "impossible dé récupérer les données", error);
     }
-
-    initMainPage(generalVar.cardsList); // REVIEW: Message d'erreur qui s'effaccent...
 } // fetchCards ()
 fetchCards();
 
-function displayErrorMessage (message) {
-    const gallery = document.querySelector(".gallery");
-    gallery.style.display = "flex";
+async function testWorksResponse (worksResponse) {
+    try {
+        generalVar.cardsList = await worksResponse.json();
+    } catch (error) {
+        displayErrorMessage("Erreur de la base de données", "Echec de la conversion du format JSON", error);
+    }
+}
 
-    const errorWindow = document.createElement("div");
-    errorWindow.style.margin = "auto";
-    errorWindow.style.color = "red";
-    errorWindow.style.border = "2px solid red";
-    errorWindow.style.padding = "5px";
-    errorWindow.style.backgroundColor = "#FF0";
-    errorWindow.style.textAlign = "center";
-
-    gallery.appendChild(errorWindow);
-
-    errorWindow.innerText = message;
+async function testCategorieResponse (categorieResponse) {
+    try {
+        generalVar.categoryList = await categorieResponse.json();
+    } catch (error) {
+        displayErrorMessage("Erreur de la base de données", "Echec de la conversion du format JSON", error);
+    }
 }

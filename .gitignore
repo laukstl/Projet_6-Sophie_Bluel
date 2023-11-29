@@ -24,3 +24,8 @@ Backend/models/works.model.js
 Backend/routes/categories.routes.js
 Backend/routes/user.routes.js
 Backend/routes/works.routes.js
+FrontEnd/.babelrc
+Backend/database - Copy.sqlite
+package-lock.json
+.gitignore
+package-lock.json

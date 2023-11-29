@@ -77,3 +77,72 @@ function editMode () {
         });
 }
 editMode();
+
+// -- Gestion de laffichage des erreurs -------------------------------------------------
+
+export function displayErrorMessage (titleLabel = "", title = "", error = "None.") {
+    const gallery = document.querySelector(".gallery");
+    gallery.style.display = "flex";
+    gallery.style.flexDirection = "column";
+
+    const errorContainer = document.createElement("div");
+    errorContainer.style.margin = "auto 150px";
+    errorContainer.style.color = "red";
+    errorContainer.style.border = "2px solid red";
+    errorContainer.style.padding = "25px";
+    errorContainer.style.backgroundColor = "#FF0";
+
+    const errorTitleLabel = document.createElement("div");
+    errorTitleLabel.style.display = "flex";
+    errorTitleLabel.style.flexDirection = "column";
+    errorTitleLabel.style.textAlign = "center";
+    errorTitleLabel.style.fontFamily = "Syne";
+    errorTitleLabel.style.fontWeight = "700";
+    errorTitleLabel.style.fontSize = "30px";
+    errorTitleLabel.style.color = "#1D6154";
+    errorTitleLabel.innerHTML = titleLabel;
+
+    const errorTitle = document.createElement("div");
+    errorTitle.style.display = "flex";
+    errorTitle.style.flexDirection = "column";
+    errorTitle.style.textAlign = "center";
+    errorTitle.style.fontFamily = "Syne";
+    errorTitle.style.fontWeight = "700";
+    errorTitle.style.fontSize = "20px";
+    errorTitle.style.color = "#1D6154";
+    errorTitle.innerHTML = title;
+    errorTitle.style.marginTop = "10px";
+
+    const errorShortDescriptionLabel = document.createElement("div");
+    errorShortDescriptionLabel.style.fontSize = "15px";
+    errorShortDescriptionLabel.style.fontWeight = "800";
+    errorShortDescriptionLabel.style.color = "#B1663C";
+    errorShortDescriptionLabel.innerHTML = "Short description :";
+    errorShortDescriptionLabel.style.marginTop = "2em";
+
+    const errorShortDescription = document.createElement("div");
+    errorShortDescription.innerHTML = error;
+
+    const errorStackLabel = document.createElement("p");
+    errorStackLabel.innerHTML = "Stack :";
+    errorStackLabel.style.fontSize = "15px";
+    errorStackLabel.style.fontWeight = "800";
+    errorStackLabel.style.color = "#B1663C";
+    errorStackLabel.style.marginTop = "1em";
+
+    const errorStack = document.createElement("p");
+    if (error.stack) {
+        errorStack.innerHTML = error.stack;
+    } else {
+        errorStack.innerHTML = "Non applicable.";
+    }
+
+    errorContainer.appendChild(errorTitleLabel);
+    errorContainer.appendChild(errorTitle);
+    errorContainer.appendChild(errorShortDescriptionLabel);
+    errorContainer.appendChild(errorShortDescription);
+    errorContainer.appendChild(errorStackLabel);
+    errorContainer.appendChild(errorStack);
+
+    gallery.appendChild(errorContainer);
+}
