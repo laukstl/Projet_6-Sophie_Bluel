@@ -25,29 +25,38 @@ import {
 const main = document.querySelector("main");
 
 let categorySelected = 0; // categorie choisi ( 0 ("Tous") par défaut )
-let category, gallery, cardsList, categoryList;
+let category, gallery, categoryList;
 const categoryButtons = [];
 
 // -- Initialisation de la page principale ----------------------------------------------
 
 export function initMainPage () {
     try {
+        // console.log(generalVar.cardsList);
+        // console.log(generalVar.categoryList);
+        // for (const k in generalVar.categoryList) { console.log(k.name); }
         buildPortfolioCategoryButtons();
-        // updatePortfolioCategoryButtonsColor();
-        updatePortfolioCardsList(generalVar.cardsList);
+        updatePortfolioCategoryButtonsColor();
+        updatePortfolioCardsList();
         loginLogoutLinkHandler();
     } catch (error) {
         displayErrorMessage("Erreur locale", "Impossible d'initialiser la page", error);
     }
 }
 
-// -- Affichage des categories du portfolio ---------------------------------------------
+/*
+ ---------------------------------------------------
+ -- Portfolio ---------------------------------------------------------------------------
+ ---------------------------------------------------
+*/
+
+// -- Gestion des boutons de catégorie du portfolio -------------------------------------
 
 export function buildPortfolioCategoryButtons () {
     categoryList = generalVar.categoryList;
 
     // ajout du bouton "Tous" à la liste des catégories du portfolio
-    categoryList.unshift({ id: "0", name: "Tous" });
+    categoryList.unshift({ id: 0, name: "Tous" });
 
     // création des boutons des catégories du portfolio
     category = document.querySelector(".category");
@@ -55,50 +64,17 @@ export function buildPortfolioCategoryButtons () {
         const button = createButton(category, null, categoryList[k].name);
         button.style.marginLeft = "15px";
         button.classList.add("categoryButtons");
-        categoryButtons.push({ id: categoryList[k].id, name: categoryList[k].name });
+        // categoryButtons.push({ id: categoryList[k].id, name: categoryList[k].name });
+        categoryButtons.push(button);
         button.addEventListener("click", () => {
             categorySelected = categoryList[k].id;
             updatePortfolioCategoryButtonsColor();
+            updatePortfolioCardsList();
         });
     }
-    // categoryButtons = document.querySelectorAll(".categoryButtons");
-}
-
-// -- Affichage des cards du portfolio --------------------------------------------------
-
-function displayPortfolioCards (cards) {
-    gallery = document.querySelector(".gallery");
-
-    // cleanGallery
-    gallery.innerHTML = "";
-
-    cards.forEach(item => {
-        const card = document.createElement("figure");
-        gallery.appendChild(card);
-
-        const img = document.createElement("img");
-        img.src = item.imageUrl;
-        card.appendChild(img);
-
-        const figcaption = document.createElement("figcaption");
-        figcaption.textContent = item.title;
-        card.appendChild(figcaption);
-    });
-}
-
-// -- Gestion du comportement du portfolio ----------------------------------------------
-
-export function updatePortfolioCardsList (cardsToDisplay) {
-    if (categorySelected !== 0) {
-        cardsToDisplay = cardsList.filter(item => item.categoryId === categorySelected);
-    } else {
-        cardsToDisplay = generalVar.cardsList;
-    }
-    displayPortfolioCards(cardsToDisplay);
 }
 
 function updatePortfolioCategoryButtonsColor () {
-    // console.log(typeof (categoryButtons), categoryButtons);
     // mise à jour des boutons de la section "category" avec le bon fond
     categoryButtons.forEach((button, index) => {
         if (categorySelected === index) {
@@ -109,9 +85,50 @@ function updatePortfolioCategoryButtonsColor () {
             button.style.color = color.green;
         }
     });
-    // mise à jours des cards
-    // updatePortfolioCardsList();
 }
+
+// -- Affichage des cards du portfolio --------------------------------------------------
+
+export function updatePortfolioCardsList () {
+    let cardsToDisplay;
+
+    if (categorySelected !== 0) {
+        cardsToDisplay = generalVar.cardsList.filter(item => item.categoryId === categorySelected);
+    } else {
+        cardsToDisplay = generalVar.cardsList;
+    }
+    displayPortfolioCards(cardsToDisplay);
+}
+
+function displayPortfolioCards (cardsToDisplay) {
+    gallery = document.querySelector(".gallery");
+
+    // cleanGallery
+    gallery.innerHTML = "";
+
+    if (generalVar.cardsList.length === 0) {
+        displayErrorMessage("Erreur de chargement ?", "La liste des images est actuellement Vide.", "None.");
+    } else {
+        cardsToDisplay.forEach(item => {
+            const card = document.createElement("figure");
+            gallery.appendChild(card);
+
+            const img = document.createElement("img");
+            img.src = item.imageUrl;
+            card.appendChild(img);
+
+            const figcaption = document.createElement("figcaption");
+            figcaption.textContent = item.title;
+            card.appendChild(figcaption);
+        });
+    }
+}
+
+/*
+ ---------------------------------------------------
+ -- Login/Logout ------------------------------------------------------------------------
+ ---------------------------------------------------
+*/
 
 // -- Gestion du comportement du lien Login/Logout --------------------------------------
 

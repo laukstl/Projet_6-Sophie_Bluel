@@ -5,9 +5,12 @@ import {
 } from "./script.js";
 
 import {
-    updateModalCards, // func
     displayModal // func
 } from "./modal-handler.js";
+
+import {
+    buildModalGalleryCards
+} from "./modal-ui.js";
 
 // Apply some css tyle
 cssTweak();
@@ -72,7 +75,7 @@ function editMode () {
 
     // update and display the modal
     portfolioBannerLinkContainer.addEventListener("click", () => {
-            updateModalCards(generalVar.cardsList);
+            buildModalGalleryCards(generalVar.cardsList);
             displayModal();
         });
 }
@@ -80,6 +83,7 @@ editMode();
 
 // -- Gestion de laffichage des erreurs -------------------------------------------------
 
+// TODO: Cacher l'intro et la gallery. Cacher la phrase vous avez un projet mais garder le form de contact
 export function displayErrorMessage (titleLabel = "", title = "", error = "None.") {
     const gallery = document.querySelector(".gallery");
     gallery.style.display = "flex";
@@ -90,7 +94,8 @@ export function displayErrorMessage (titleLabel = "", title = "", error = "None.
     errorContainer.style.color = "red";
     errorContainer.style.border = "2px solid red";
     errorContainer.style.padding = "25px";
-    errorContainer.style.backgroundColor = "#FF0";
+    errorContainer.style.backgroundColor = "#FFFFFF";
+    // errorContainer.style.backgroundColor = "#FF0";
 
     const errorTitleLabel = document.createElement("div");
     errorTitleLabel.style.display = "flex";

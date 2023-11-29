@@ -5,20 +5,41 @@ import {
     modalAddPhoto,
     modalTitle,
     modalGallery,
-    modalWindow
+    modalWindow,
+    buildModalGalleryCards
 } from "./modal-ui.js";
 
 import {
-    generalVar
+    fetchCards
 } from "./script.js";
 
 import {
     updatePortfolioCardsList // func
 } from "./main-handler.js";
 
-// Need ajouter les EventListener ET les retirer correctement
+// TODO: Need ajouter les EventListener ET les retirer correctement
 modalReturnButton.addEventListener("click", () => displayPhotoGallery()); // flèche de retour
-modalSubmitButton.addEventListener("click", () => displayAddPhoto()); // bouton "Ajouter une photo"
+// modalSubmitButton.addEventListener("click", () => displayAddPhoto()); // bouton "Ajouter une photo"
+
+function modalButtonHandler (window) {
+    if (window === "gal") {
+        // mode Gallery photo
+        modalSubmitButton.innerText = "Ajouter une photo";
+        modalSubmitButton.style.background = "#1D6154";
+
+        modalSubmitButton.addEventListener("click", () => displayAddPhoto());
+    } else {
+        // mode Ajout photo
+        modalSubmitButton.innerText = "valider";
+        modalSubmitButton.style.background = "#A7A7A7";
+        modalSubmitButton.style.border = "1px solid #A7A7A7";
+        modalSubmitButton.disabled = true;
+
+        // modalSubmitButton.addEventListener("click", (event) => event.preventDefault());
+    }
+}
+
+// -- Affichage de la gallery de la modale ----------------------------------------------
 
 export function displayPhotoGallery () {
     // on cache
@@ -29,7 +50,11 @@ export function displayPhotoGallery () {
     // on affiche
     modalGallery.style.display = "grid";
     modalWindow.style.display = "flex";
+
+    modalButtonHandler("gal");
 }
+
+// -- Affichage de la page d'ajout de photo de la modale --------------------------------
 
 export function displayAddPhoto () {
     // on cache
@@ -39,11 +64,18 @@ export function displayAddPhoto () {
     modalReturnButton.style.display = "block";
     // on affiche
     modalAddPhoto.style.display = "flex";
+
+    modalButtonHandler("add");
 }
 
-// ***************************************
+/*
+ ---------------------------------------------------
+ -- Show/Hide Modal ---------------------------------------------------------------------
+ ---------------------------------------------------
+*/
 
-// show/hide Modal Window
+// -- Affichage de la modale ------------------------------------------------------------
+
 export function displayModal () {
     displayPhotoGallery();
     modalWindow.style.display = "flex";
@@ -62,19 +94,20 @@ export function displayModal () {
     document.addEventListener("keydown", modalKeydownHandler);
 }
 
+// -- Masquage de la modale -------------------------------------------------------------
+
 export function hideModal () {
-    console.log("hideModal", "Hiding Modal");
     document.removeEventListener("click", modalClickHandler);
     document.removeEventListener("keydown", modalKeydownHandler);
 
     modalWindow.style.display = "none";
 }
 
+// -- Gestion des comportements du Click et Escape --------------------------------------
+
 function modalClickHandler (event) {
-    console.log("modalClickHandler - ", event);
     if (
         event.target !== modalWindow
-        // event.target !== modalWindow || event.target === modalCloseButton
     ) {
         hideModal();
     }
@@ -86,98 +119,41 @@ function modalKeydownHandler (event) {
     }
 }
 
-// ***************************************
-let cardsToDisplay;
-let trashIconContainer = null;
-// Affichage les images dans la gallerie du modal en fonction de cardsToDisplay ( donc idem à l'autre gal )
-export function updateModalCards (cards) {
-    cardsToDisplay = generalVar.cardsList;
-    // clean gallery
-    modalGallery.innerHTML = "";
+/*
+ ---------------------------------------------------
+ -- Gestionnaire d'ajout / retrait d'image ----------------------------------------------
+ ---------------------------------------------------
+*/
 
-    cardsToDisplay.forEach(item => {
-        const card = document.createElement("div");
-        card.style.position = "relative";
-        modalGallery.appendChild(card);
+// -- Effacement d'une image ------------------------------------------------------------
 
-            const img = document.createElement("img");
-            img.src = item.imageUrl;
-            img.style.width = "100%";
-            card.appendChild(img);
+export async function deleteCard (item) {
+    const id = item.id;
 
-            trashIconContainer = document.createElement("a");
-            trashIconContainer.style.position = "absolute";
-            trashIconContainer.style.top = "5px";
-            trashIconContainer.style.right = "5px";
-            trashIconContainer.style.height = "17px";
-            trashIconContainer.style.width = "17px";
-            trashIconContainer.style.textAlign = "center";
-            trashIconContainer.style.lineHeight = "17px";
-            trashIconContainer.style.background = "black";
-            trashIconContainer.style.cursor = "pointer";
-            trashIconContainer.addEventListener("click", () => deleteCard(item));
-            card.appendChild(trashIconContainer);
+    try {
+        const UserToken = window.localStorage.getItem("tokenID"); // FIXME: need a try
 
-                const trashIcon = document.createElement("img");
-                trashIcon.setAttribute("src", "./assets/icons/trashcan.svg");
-                trashIcon.style.height = "11px";
-                trashIcon.style.width = "9px";
-                trashIconContainer.appendChild(trashIcon);
-    });
-} // updateModalCards (cards)
+        const response = await fetch(`http://localhost:5678/api/works/${id}`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${UserToken}`
+            }
+        });
+        if (response.ok) {
+            console.log("Item succefully deleted !");
+            // cardsToDisplay.splice(index, 1);
+        } else {
+            console.log("deleteItem() error : ", response);
+        }
+    } catch (error) {
+        console.log("Erreur de serveur : " + error);
+    }
 
-async function deleteCard (item) {
-    // id
-
-    // try {
-    //     const response = await fetch(`http://localhost:5678/api/works/${id}`, {
-    //         method: "DELETE",
-    //         headers: {
-    //             Authorization: `Bearer ${UserToken}`
-    //         }
-    //     });
-    //     if (response.ok) {
-
-    //     } else {
-    //         console.log("deleteItem() error : ", response);
-    //     }
-    // } catch (error) {
-    //     console.log("Erreur de serveur : " + error);
-    // }
-
-    // // cardsToDisplay = cardsToDisplay.filter(card => card.id !== item.id); // L'élégance...
-    // cardsToDisplay.forEach((cards, index) => {
-    //     if (item.id === cards.id) {
-    //         const response = deleteItem(item.id);
-
-    //         if (response) {
-    //             cardsToDisplay.splice(index, 1);
-    //         }
-    //         } else {
-    //             console.log("Erreur lors de la suppression de l'image.");
-    //         }
-    // });
-    // refresh gallerieS
-    updateModalCards();
-    updatePortfolioCardsList();
+    // mets à jour les 2 gallerieS à partir d'un new fetch de la liste du server
+    if (await fetchCards()) {
+        buildModalGalleryCards();
+        updatePortfolioCardsList();
+    }
 } // deleteCard (item)
 
-// async function deleteItem (id) {
-    // const UserToken = window.localStorage.getItem("tokenID");
-
-    // try {
-    //     const response = await fetch(`http://localhost:5678/api/works/${id}`, {
-    //         method: "DELETE",
-    //         headers: {
-    //             Authorization: `Bearer ${UserToken}`
-    //         }
-    //     });
-    //     if (response.ok) {
-    //         return true;
-    //     } else {
-    //         console.log("deleteItem() error : ", response);
-    //     }
-    // } catch (error) {
-    //     console.log("Erreur de serveur : " + error);
-    // }
-// }
+// -- Ajout d'une image -----------------------------------------------------------------
