@@ -2,7 +2,7 @@ import { createButton } from "./button.js";
 
 export let loginContainer, emailInput, passwordInput, loginErrorMessage, loginButton;
 
-function buildLoginWindow () {
+export function buildLoginWindow () {
     // création section LOGIN
     const login = document.createElement("form");
     loginContainer = document.getElementById("loginContainer");
@@ -86,4 +86,3 @@ function buildLoginWindow () {
     linkPwdForgotten.style["font-weight"] = "500";
     login.appendChild(linkPwdForgotten);
 } // buildLoginWindow ()
-buildLoginWindow();

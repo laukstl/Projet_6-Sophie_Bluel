@@ -1,28 +1,36 @@
 /* eslint-disable no-return-assign */
-import * as color from "./gui/colors.js";
-import { createButton } from "./button.js";
+import { cssTweak } from "./ui/csstweak.js";
+
+import * as color from "./ui/colors.js";
+
+import { createButton } from "./ui/button.js";
 
 import {
     loginContainer, // <div> container HTML
-    loginButton // <button>
-} from "./login-ui.js";
+    loginButton, // <button>
+    buildLoginWindow
+} from "./ui/login-ui.js";
 
-import { checkLogin } from "./login-handler.js";
+import { checkLogin } from "../js/login-handler.js";
 
-import { hideModal } from "./modal-handler.js";
+import {
+    hideModal,
+    displayModal, // NOTE: ----------------
+    displayAddPhoto // NOTE: ----------------
+} from "./modal-handler.js";
+
+import { buildModalWindow } from "./ui/modal-ui.js";
 
 import {
     banner,
     portfolioBannerLinkContainer,
-    displayErrorMessage
-} from "./main-ui.js";
+    displayErrorMessage,
+    buildEditMode
+} from "./ui/main-ui.js";
 
 import {
     generalVar
-} from "./script.js";
-
-// container central ( entre le header et le footer )
-const main = document.querySelector("main");
+} from "../script.js";
 
 let categorySelected = 0; // categorie choisi ( 0 ("Tous") par défaut )
 let category, gallery, categoryList;
@@ -32,13 +40,16 @@ const categoryButtons = [];
 
 export function initMainPage () {
     try {
-        // console.log(generalVar.cardsList);
-        // console.log(generalVar.categoryList);
-        // for (const k in generalVar.categoryList) { console.log(k.name); }
+        cssTweak(); // Apply some css style
         buildPortfolioCategoryButtons();
         updatePortfolioCategoryButtonsColor();
+        buildLoginWindow();
+        buildEditMode();
+        buildModalWindow();
         updatePortfolioCardsList();
         loginLogoutLinkHandler();
+        displayModal(); // NOTE: -----------------
+        displayAddPhoto(); // NOTE: -----------------
     } catch (error) {
         displayErrorMessage("Erreur locale", "Impossible d'initialiser la page", error);
     }
@@ -133,6 +144,9 @@ function displayPortfolioCards (cardsToDisplay) {
 // -- Gestion du comportement du lien Login/Logout --------------------------------------
 
 function loginLogoutLinkHandler () {
+    // container central ( entre le header et le footer )
+    const main = document.querySelector("main");
+
     let isConnected = false;
     const linkLogin = document.getElementById("nav__login");
     linkLogin.addEventListener("click", () => {

@@ -1,3 +1,5 @@
+// import * as color from "./ui/colors.js";
+
 import {
     modalReturnButton,
     modalCloseButton,
@@ -6,38 +8,28 @@ import {
     modalTitle,
     modalGallery,
     modalWindow,
-    buildModalGalleryCards
-} from "./modal-ui.js";
+    buildModalGalleryCards,
+
+    // modalAddPictureButton,
+    // modalRealHiddenAddPictureButton,
+
+    titleInputField,
+    titleErrorCharCount,
+    titleErrorAlphaNumChar,
+    categoryDropdown,
+
+    modalSubmitButtonEnabled,
+    modalSubmitButtonDisabled
+} from "./ui/modal-ui.js";
 
 import {
+    generalVar,
     fetchCards
-} from "./script.js";
+} from "../script.js";
 
 import {
     updatePortfolioCardsList // func
 } from "./main-handler.js";
-
-// TODO: Need ajouter les EventListener ET les retirer correctement
-modalReturnButton.addEventListener("click", () => displayPhotoGallery()); // flèche de retour
-// modalSubmitButton.addEventListener("click", () => displayAddPhoto()); // bouton "Ajouter une photo"
-
-function modalButtonHandler (window) {
-    if (window === "gal") {
-        // mode Gallery photo
-        modalSubmitButton.innerText = "Ajouter une photo";
-        modalSubmitButton.style.background = "#1D6154";
-
-        modalSubmitButton.addEventListener("click", () => displayAddPhoto());
-    } else {
-        // mode Ajout photo
-        modalSubmitButton.innerText = "valider";
-        modalSubmitButton.style.background = "#A7A7A7";
-        modalSubmitButton.style.border = "1px solid #A7A7A7";
-        modalSubmitButton.disabled = true;
-
-        // modalSubmitButton.addEventListener("click", (event) => event.preventDefault());
-    }
-}
 
 // -- Affichage de la gallery de la modale ----------------------------------------------
 
@@ -65,7 +57,7 @@ export function displayAddPhoto () {
     // on affiche
     modalAddPhoto.style.display = "flex";
 
-    modalButtonHandler("add");
+    modalButtonHandler("no-gal");
 }
 
 /*
@@ -76,7 +68,8 @@ export function displayAddPhoto () {
 
 // -- Affichage de la modale ------------------------------------------------------------
 
-export function displayModal () {
+export function displayModal () { // TODO: Gérer les removeListener
+    // TODO: rendre inactif l'arrière plan
     displayPhotoGallery();
     modalWindow.style.display = "flex";
 
@@ -90,6 +83,8 @@ export function displayModal () {
     modalWindow.addEventListener('click', function (event) { event.stopPropagation(); });
 
     modalCloseButton.addEventListener('click', () => hideModal());
+
+    modalReturnButton.addEventListener("click", () => displayPhotoGallery()); // flèche de retour
 
     document.addEventListener("keydown", modalKeydownHandler);
 }
@@ -149,11 +144,77 @@ export async function deleteCard (item) {
         console.log("Erreur de serveur : " + error);
     }
 
+    // // mets à jour les 2 gallerieS à partir d'un new fetch de la liste du server
+    // if (await fetchCards()) {
+    //     buildModalGalleryCards();
+    //     updatePortfolioCardsList();
+    // }
+    updateAllGallery();
+} // deleteCard (item)
+
+export async function updateAllGallery () {
     // mets à jour les 2 gallerieS à partir d'un new fetch de la liste du server
     if (await fetchCards()) {
         buildModalGalleryCards();
         updatePortfolioCardsList();
     }
-} // deleteCard (item)
+}
+
+// export async function addCard (item) {
+
+// }
 
 // -- Ajout d'une image -----------------------------------------------------------------
+
+export function formHandler () {
+    //
+    // remplissage du menu déroulant
+    generalVar.categoryList.forEach(item => {
+        if (item.id !== 0) {
+            const optionChoice = document.createElement("option");
+            optionChoice.innerText = item.name;
+            optionChoice.value = item.id;
+            categoryDropdown.appendChild(optionChoice);
+        }
+    });
+}
+
+function modalButtonHandler (window) {
+    // changement du comportement du bouton en toggle "valider"/"ajouter une photo"
+    if (window === "gal") {
+        // "ajouter une photo"
+        modalSubmitButton.innerText = "Ajouter une photo";
+        modalSubmitButtonEnabled();
+
+        modalSubmitButton.addEventListener("click", () => displayAddPhoto()); // TODO: Gérer les removeListener
+    } else {
+        const titleInput = titleInputField.value;
+        // "valider"
+        modalSubmitButton.innerText = "valider";
+        if (titleInput.length >= 4) {
+            modalSubmitButtonEnabled();
+        } else {
+            modalSubmitButtonDisabled();
+        }
+    }
+
+    // changement du comportement du bouton en fonction du nombre de charactère dans l'inputField
+    // changement de couleur des aides pou l'InputField par validation du nombre ou du genre des caractères
+    titleInputField.addEventListener("input", () => {
+        const titleInput = titleInputField.value;
+        const regex = /^[a-zA-Z0-9.&_-]+$/;
+        if (!regex.test(titleInputField.value)) {
+            titleErrorAlphaNumChar.style.color = "red";
+        } else {
+            titleErrorAlphaNumChar.style.color = "green";
+        }
+
+        if (titleInput.length >= 4) {
+            titleErrorCharCount.style.color = "green";
+            modalSubmitButtonEnabled();
+        } else {
+            titleErrorCharCount.style.color = "red";
+            modalSubmitButtonDisabled();
+        }
+    });
+}

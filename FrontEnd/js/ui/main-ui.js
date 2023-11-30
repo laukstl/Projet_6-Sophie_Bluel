@@ -1,25 +1,20 @@
-import { cssTweak } from "./csstweak.js";
-
 import {
     generalVar
-} from "./script.js";
+} from "../../script.js";
 
 import {
     displayModal // func
-} from "./modal-handler.js";
+} from "../modal-handler.js";
 
 import {
     buildModalGalleryCards
 } from "./modal-ui.js";
 
-// Apply some css tyle
-cssTweak();
-
 export let banner, portfolioBannerLinkContainer;
 
 // -- ui du mode Edition ----------------------------------------------
 
-function editMode () {
+export function buildEditMode () {
     //  Ajout d'une bannière au dessus de l'header
     banner = document.getElementById("editModeBanner");
     banner.style.background = "Black";
@@ -79,15 +74,20 @@ function editMode () {
             displayModal();
         });
 }
-editMode();
 
 // -- Gestion de laffichage des erreurs -------------------------------------------------
 
-// TODO: Cacher l'intro et la gallery. Cacher la phrase vous avez un projet mais garder le form de contact
 export function displayErrorMessage (titleLabel = "", title = "", error = "None.") {
-    const gallery = document.querySelector(".gallery");
-    gallery.style.display = "flex";
-    gallery.style.flexDirection = "column";
+    const errors = document.getElementById("errors");
+    const introduction = document.getElementById("introduction");
+    const portfolio = document.getElementById("portfolio");
+
+    const errorMessageContact = document.querySelector("#contact p");
+    errorMessageContact.innerText = "Désole pour ce contre-temps. Vous pouvez toujours nous contacter :";
+
+    introduction.style.display = "none";
+    portfolio.style.display = "none";
+    errors.style.marginBottom = "30px";
 
     const errorContainer = document.createElement("div");
     errorContainer.style.margin = "auto 150px";
@@ -149,5 +149,5 @@ export function displayErrorMessage (titleLabel = "", title = "", error = "None.
     errorContainer.appendChild(errorStackLabel);
     errorContainer.appendChild(errorStack);
 
-    gallery.appendChild(errorContainer);
+    errors.appendChild(errorContainer);
 }

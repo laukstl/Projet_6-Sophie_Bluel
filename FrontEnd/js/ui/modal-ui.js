@@ -1,11 +1,18 @@
+import * as color from "./colors.js";
+
 import { createButton } from "./button.js";
 
-import { generalVar } from "./script.js";
+import { generalVar } from "../../script.js";
 
-import { deleteCard } from "./modal-handler.js";
+import {
+    deleteCard,
+    formHandler,
+    updateAllGallery
+} from "../modal-handler.js";
 
 export let modalGallery, modalWindow, modalCloseButton, modalAddPhoto, modalReturnButton, modalTitle, modalSubmitButton;
-export let titleInputField, categoryDropdown;
+export let titleInputField, titleErrorCharCount, titleErrorAlphaNumChar, categoryDropdown, modalAddPictureButton, modalRealHiddenAddPictureButton;
+let modalPicturePreview, modalInstructions, modalImg, selectedFile;
 
 export function buildModalWindow () {
     // -- Container global de la modale -------------------------------------------------
@@ -93,7 +100,7 @@ export function buildModalWindow () {
     modalAddPhoto.style.gap = "20px";
     modalWindow.appendChild(modalAddPhoto);
 
-    // -- Container pour la sélection d'une photo --------------------------------------------
+    // -- Container pour la sélection d'une photo ---------------------------------------
 
     const modalPictureContainer = document.createElement("div");
     modalPictureContainer.style.display = "flex";
@@ -104,15 +111,28 @@ export function buildModalWindow () {
     modalPictureContainer.style.width = "420px";
     modalPictureContainer.style.height = "169px";
     modalPictureContainer.style.backgroundColor = "#E8F1F6";
+    modalPicturePreview = document.createElement("img");
+    modalPicturePreview.style.display = "none";
+    // modalPicturePreview.style.flexDirection = "column";
+    // modalPicturePreview.style.alignItems = "center";
+    // modalPicturePreview.style.justifyContent = "center";
+    // modalPicturePreview.style.width = "420px";
+    // modalPicturePreview.style.height = "169px";
+    // modalPicturePreview.style.backgroundColor = "#E8F1F6";
+    modalPictureContainer.appendChild(modalPicturePreview);
     modalAddPhoto.appendChild(modalPictureContainer);
 
     // l'image de démonstration
-    const modalImg = document.createElement("img");
+    modalImg = document.createElement("img");
     modalImg.src = "./assets/icons/picture.svg";
     modalPictureContainer.appendChild(modalImg);
 
     // le bouton "+ Ajouter photo"
-    const modalAddPictureButton = document.createElement("button");
+    modalAddPictureButton = document.createElement("button");
+    const modalRealHiddenAddPictureButton = document.createElement("input");
+    modalRealHiddenAddPictureButton.type = "file";
+    modalRealHiddenAddPictureButton.accept = ".jpg, .png";
+    modalRealHiddenAddPictureButton.style.display = "none";
     modalAddPictureButton.style.borderRadius = "60px";
     modalAddPictureButton.style.backgroundColor = "#CBD6DC";
     modalAddPictureButton.style.border = "#CBD6DC";
@@ -125,21 +145,78 @@ export function buildModalWindow () {
     modalAddPictureButton.style.fontSize = "14px";
     modalAddPictureButton.style.color = "#306685";
     modalAddPictureButton.textContent = "+ Ajouter photo";
+    modalAddPictureButton.addEventListener("click", () => modalRealHiddenAddPictureButton.click());
     modalPictureContainer.appendChild(modalAddPictureButton);
+    modalPictureContainer.appendChild(modalRealHiddenAddPictureButton);
 
     // les instructions de formats acceptés
-    const modalInstructions = document.createElement("div");
+    modalInstructions = document.createElement("div");
     modalInstructions.innerText = "jpg, png : 4mo max";
     modalInstructions.style.color = "#444444";
     modalPictureContainer.appendChild(modalInstructions);
+
+    // NOTE: Début
+
+    modalRealHiddenAddPictureButton.addEventListener("change", (event) => {
+        selectedFile = event.target.files[0];
+
+        // if (selectedFile) { // lastModified name size type webkitRelativePath
+            // ("Nom du fichier:", selectedFile.name);
+            // ("Type de fichier:", selectedFile.type);
+            // ("Taille du fichier (en octets):", selectedFile.size);
+            // if (selectedFile.size > 4000000) { TOO BIG }
+            // if (selectedFile.type != ) { BAD FORMAT }
+        // }
+        console.log(selectedFile.type);
+        // image/x-icon
+        // text/plain
+
+        const imageUrl = URL.createObjectURL(selectedFile);
+        modalPicturePreview.src = imageUrl;
+        modalPicturePreview.style.maxHeight = "169px";
+        modalPicturePreview.style.width = "auto";
+
+        processAddPhoto();
+
+        // modalImg.style.display = "none";
+        // modalAddPictureButton.style.display = "none";
+        // modalInstructions.style.display = "none";
+        // modalPicturePreview.style.display = "flex";
+    });
+
+    // const formData = new FormData();
+    // formData.append("image", modalRealHiddenAddPictureButton.files[0]);
+    // formData.append("title", titleInputField.value);
+    // formData.append("category", categoryDropdown.value);
+
+    // NOTE: Fin
 
     // -- Formulaire d'ajout de photo ---------------------------------------------------
 
     // const modalFormContainer = document.createElement("form");
     // Titre
-    const labelTitre = document.createElement("label");
-    labelTitre.innerText = "Titre";
-    labelTitre.style.color = "#3D3D3D";
+    const titleContainer = document.createElement("div");
+    titleContainer.style.display = "flex";
+    titleContainer.style.position = "relative";
+    const titleLabel = document.createElement("label");
+    titleLabel.innerText = "Titre";
+    titleLabel.style.color = "#3D3D3D";
+    titleErrorCharCount = document.createElement("div");
+    titleErrorCharCount.style.marginLeft = "45px";
+    titleErrorCharCount.style.position = "absolute";
+    titleErrorCharCount.style.top = "-7px";
+    titleErrorCharCount.style.color = "lightgrey";
+    titleErrorCharCount.innerText = "Minimum 4 caractères";
+    titleErrorAlphaNumChar = document.createElement("div");
+    titleErrorAlphaNumChar.style.marginLeft = "45px";
+    titleErrorAlphaNumChar.style.position = "absolute";
+    titleErrorAlphaNumChar.style.top = "7px";
+    titleErrorAlphaNumChar.style.color = "lightgrey";
+    titleErrorAlphaNumChar.innerText = "Chiffres, lettres, et caractères - . & _ autorisés";
+    titleContainer.appendChild(titleLabel);
+    titleContainer.appendChild(titleErrorCharCount);
+    titleContainer.appendChild(titleErrorAlphaNumChar);
+
     titleInputField = document.createElement("input");
     titleInputField.style.height = "51px";
     titleInputField.style.color = "#3D3D3D";
@@ -156,14 +233,10 @@ export function buildModalWindow () {
     categoryDropdown.style.paddingLeft = "16px";
     categoryDropdown.style.boxShadow = "0px 4px 14px rgba(0, 0, 0, 0.09)";
     categoryDropdown.style.border = "none";
-    // TODO: Faire une boucle dans handler !
-    // for (const k in generalVar.categoryList) { console.log(k); }
-    const select1 = document.createElement("option");
-    select1.innerText = "Bar & Restaurant";
-    select1.value = "val1";
-    categoryDropdown.appendChild(select1);
 
-    modalAddPhoto.appendChild(labelTitre);
+    formHandler();
+
+    modalAddPhoto.appendChild(titleContainer);
     modalAddPhoto.appendChild(titleInputField);
     modalAddPhoto.appendChild(labelCategory);
     modalAddPhoto.appendChild(categoryDropdown);
@@ -179,9 +252,70 @@ export function buildModalWindow () {
     // -- Bouton de submission du formulaire --------------------------------------------
 
     modalSubmitButton = createButton(modalWindow, "237px", "Ajouter une photo", true);
+    modalSubmitButton.addEventListener("click", () => submitForm(modalRealHiddenAddPictureButton, titleInputField, categoryDropdown));
     modalSubmitButton.style.margin = "50px";
 } // buildModalWindow ()
-buildModalWindow();
+
+function processAddPhoto () {
+    modalImg.style.display = "none";
+    modalAddPictureButton.style.display = "none";
+    modalInstructions.style.display = "none";
+    modalPicturePreview.style.display = "flex";
+}
+
+function reinitAddPhoto () {
+    console.log("test");
+    modalPicturePreview.innerHTML = "";
+    modalPicturePreview.style.display = "none";
+    titleInputField.innerText = "";
+    selectedFile = null;
+
+    modalImg.style.display = "block";
+    modalAddPictureButton.style.display = "block";
+    modalInstructions.style.display = "block";
+}
+
+async function submitForm (modalRealHiddenAddPictureButton, titleInputField, categoryDropdown) {
+    const formData = new FormData();
+    formData.append("image", modalRealHiddenAddPictureButton.files[0]);
+    formData.append("title", titleInputField.value);
+    formData.append("category", categoryDropdown.value);
+
+    try {
+        const UserToken = window.localStorage.getItem("tokenID"); // FIXME: need a try
+
+        const response = await fetch("http://localhost:5678/api/works/", {
+            method: "POST",
+            body: formData,
+            headers: {
+                Authorization: `Bearer ${UserToken}`
+            }
+        });
+        if (response.ok) {
+            console.log("Item succefully created !");
+            reinitAddPhoto();
+        } else {
+            console.log("createItem() error : ", response);
+        }
+    } catch (error) {
+        console.log("Erreur de serveur : " + error);
+    }
+    updateAllGallery();
+}
+
+export function modalSubmitButtonEnabled () {
+    modalSubmitButton.style.background = color.green;
+    modalSubmitButton.style.border = `1px solid ${color.green}`;
+    modalSubmitButton.disabled = false;
+    modalSubmitButton.style.cursor = "pointer";
+}
+
+export function modalSubmitButtonDisabled () {
+    modalSubmitButton.style.background = color.grey;
+    modalSubmitButton.style.border = `1px solid ${color.grey}`;
+    modalSubmitButton.disabled = true;
+    modalSubmitButton.style.cursor = "not-allowed";
+}
 
 // Affichage les images dans la gallerie du modal en fonction de cardsList ( donc idem à l'autre gal )
 export function buildModalGalleryCards () {

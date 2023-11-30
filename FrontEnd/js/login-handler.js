@@ -1,10 +1,6 @@
 import {
-    // loginContainer, // <div> le container HTML
-    // emailInput, // <input>
-    // passwordInput, // <input>
     loginErrorMessage // <p>
-    // loginButton // <button>
-} from "./login-ui.js";
+} from "./ui/login-ui.js";
 
 let userId = null;
 let userToken = null;
@@ -54,14 +50,6 @@ export async function checkLogin () {
 
             window.localStorage.setItem("userID", userId);
             window.localStorage.setItem("tokenID", userToken);
-
-            // const newUserId = window.localStorage.getItem("userID");
-            // const newUserToken = window.localStorage.getItem("tokenID");
-
-            // window.localStorage.removeItem("userID");
-            // window.localStorage.removeItem("tokenID");
-
-            console.log("Welcome " + userId + ", you have the token : " + userToken);
 
             return true;
         } else {

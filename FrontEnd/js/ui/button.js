@@ -1,4 +1,4 @@
-import * as color from "./gui/colors.js";
+import * as color from "./colors.js";
 
 /*
     function createButton (container, width, text, reverseColor) {}

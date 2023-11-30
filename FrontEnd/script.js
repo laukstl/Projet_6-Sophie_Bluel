@@ -4,16 +4,17 @@
 
 import {
     initMainPage
-} from "./main-handler.js";
+} from "./js/main-handler.js";
 
 import {
     displayErrorMessage
-} from "./main-ui.js";
+} from "./js/ui/main-ui.js";
 
 // variables générales
 export const generalVar = { cardsList: [], categoryList: [] };
 
 /*
+cardsList
 Array(11) [ {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, … ]
 ​0: Object { id: 1, title: "Abajour Tahina", imageUrl: "http://localhost:5678/images/abajour-tahina1651286843956.png", … }
 ​1: Object { id: 2, title: "Appartement Paris V", imageUrl: "http://localhost:5678/images/appartement-paris-v1651287270508.png", … }
@@ -38,6 +39,15 @@ Array(3) [ {…}, {…}, {…} ]
 3: Object { id: 3, name: "Hotels & restaurants" }
 length: 4
 */
+
+// -- Initialisation du site ------------------------------------------------------------
+
+async function firstInit () {
+    if (await fetchCards()) { // Si la récupération des fichiers a réussi
+        initMainPage(); // lance l'initialisation de la page principale
+    }
+}
+firstInit();
 
 // -- Récupération des images du serveur ------------------------------------------------
 
@@ -65,14 +75,6 @@ export async function fetchCards () {
         displayErrorMessage("Erreur du serveur", "impossible dé récupérer les données", error);
     }
 } // fetchCards ()
-
-async function firstInit () {
-    if (await fetchCards()) {
-        // Si tout est ok, lance l'initialisation de la page principale
-        initMainPage();
-    }
-}
-firstInit();
 
 // -- Gestion des erreurs de conversion JSON de la base de données des images -----------
 
