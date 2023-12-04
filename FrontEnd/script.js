@@ -1,4 +1,5 @@
 /* eslint-disable no-irregular-whitespace */
+/* 1332 lignes de codes */
 
 // NOTE: Séparation des préoccupations : chaque fonction ou module a une seule responsabilité et suit le principe de la séparation des préoccupations.
 

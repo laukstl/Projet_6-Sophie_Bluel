@@ -10,7 +10,7 @@ export function cssTweak () {
     const linksNav = document.querySelectorAll("nav a");
     linksNav.forEach(link => {
         link.style.textDecoration = "none";
-        link.style.color = "inherit";
+        link.style.color = "black";
     });
 
     // document.querySelector("li:hover").style.fontWeight = "600";
@@ -29,6 +29,7 @@ export function cssTweak () {
     document.querySelector("main").style.position = "relative";
 
     document.getElementById("nav__login").style.cursor = "pointer";
+    document.getElementById("nav__login").style.color = "inherit";
 
     document.getElementById("portfolioTitle").style.marginTop = "130px";
 

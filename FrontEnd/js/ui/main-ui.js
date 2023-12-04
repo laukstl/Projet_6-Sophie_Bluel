@@ -79,22 +79,26 @@ export function buildEditMode () {
 
 export function displayErrorMessage (titleLabel = "", title = "", error = "None.") {
     const errors = document.getElementById("errors");
-    const introduction = document.getElementById("introduction");
+    // const introduction = document.getElementById("introduction");
     const portfolio = document.getElementById("portfolio");
 
     const errorMessageContact = document.querySelector("#contact p");
     errorMessageContact.innerText = "Désole pour ce contre-temps. Vous pouvez toujours nous contacter :";
 
-    introduction.style.display = "none";
+    // introduction.style.display = "none";
     portfolio.style.display = "none";
     errors.style.marginBottom = "30px";
 
     const errorContainer = document.createElement("div");
-    errorContainer.style.margin = "auto 150px";
+    errorContainer.style.margin = "auto 15%";
+    errorContainer.style.zIndex = "9999";
+    errorContainer.style.position = "absolute";
+    errorContainer.style.top = "180px";
     errorContainer.style.color = "red";
     errorContainer.style.border = "2px solid red";
-    errorContainer.style.padding = "25px";
-    errorContainer.style.backgroundColor = "#FFFFFF";
+    errorContainer.style.padding = "15px";
+    errorContainer.style.backgroundColor = "rgba(255,255,255,0.85)";
+    errorContainer.style.wordWrap = "break-word";
     // errorContainer.style.backgroundColor = "#FF0";
 
     const errorTitleLabel = document.createElement("div");
@@ -150,4 +154,7 @@ export function displayErrorMessage (titleLabel = "", title = "", error = "None.
     errorContainer.appendChild(errorStack);
 
     errors.appendChild(errorContainer);
+
+    errorContainer.ariaHidden = "false";
+    // main.ariaHidden = "true"; // NOTE: à cause du formulaire de contact, c'est mal pensé
 }

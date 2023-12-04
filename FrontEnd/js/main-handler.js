@@ -14,9 +14,7 @@ import {
 import { checkLogin } from "../js/login-handler.js";
 
 import {
-    hideModal,
-    displayModal, // NOTE: ----------------
-    displayAddPhoto // NOTE: ----------------
+    hideModal
 } from "./modal-handler.js";
 
 import { buildModalWindow } from "./ui/modal-ui.js";
@@ -48,8 +46,6 @@ export function initMainPage () {
         buildModalWindow();
         updatePortfolioCardsList();
         loginLogoutLinkHandler();
-        displayModal(); // NOTE: -----------------
-        displayAddPhoto(); // NOTE: -----------------
     } catch (error) {
         displayErrorMessage("Erreur locale", "Impossible d'initialiser la page", error);
     }
@@ -179,7 +175,7 @@ function loginLogoutLinkHandler () {
                 window.localStorage.removeItem("userID");
                 window.localStorage.removeItem("tokenID");
             } catch (error) {
-                console.log("Unexpected error: " + error); // REVIEW:
+                console.log("Unexpected error: " + error); // TODO: Not in console !
             }
         }
     });

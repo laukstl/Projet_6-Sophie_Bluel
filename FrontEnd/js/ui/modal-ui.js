@@ -6,20 +6,20 @@ import { generalVar } from "../../script.js";
 
 import {
     deleteCard,
-    formHandler,
-    updateAllGallery
+    formHandler
 } from "../modal-handler.js";
 
-export let modalGallery, modalWindow, modalCloseButton, modalAddPhoto, modalReturnButton, modalTitle, modalSubmitButton;
-export let titleInputField, titleErrorCharCount, titleErrorAlphaNumChar, categoryDropdown, modalAddPictureButton, modalRealHiddenAddPictureButton;
-let modalPicturePreview, modalInstructions, modalImg, selectedFile;
+export let modalWindow, modalReturnButton, modalTitle, modalCloseButton, modalMessageContainer, modalGallery, modalAddPhoto, modalSubmitButton;
+export let titleInputField, titleErrorCharCount, titleErrorAlphaNumChar, categoryDropdown;
+export let modalAddPictureButton, modalRealHiddenAddPictureButton;
+export let modalInstructions, modalPicturePreview, modalImg;
 
 export function buildModalWindow () {
     // -- Container global de la modale -------------------------------------------------
 
     modalWindow = document.getElementById("modalWindow");
     modalWindow.id = "modalWindow";
-    modalWindow.style["z-index"] = "9999";
+    modalWindow.style["z-index"] = "1";
     modalWindow.style.Height = "688px";
     modalWindow.style.maxWidth = "630px";
     modalWindow.style.backgroundColor = "#fFf";
@@ -37,7 +37,7 @@ export function buildModalWindow () {
     // -- Flèche de retour -- ( Uniquement sur Ajout photo ) ----------------------------
 
     modalReturnButton = document.createElement("img");
-    modalReturnButton.style.display = "none"; // **************************
+    modalReturnButton.style.display = "none";
     modalReturnButton.src = "./assets/icons/arrow-left.svg";
     modalReturnButton.style.height = "21px";
     modalReturnButton.style.width = "21px";
@@ -63,10 +63,23 @@ export function buildModalWindow () {
     // -- Titre de la modale ------------------------------------------------------------
 
     modalTitle = document.createElement("h3");
+    modalTitle.id = "modalTitle";
     modalTitle.style.fontFamily = "Work Sans";
     modalTitle.style.fontSize = "26px";
     modalTitle.style.marginTop = "60px";
     modalWindow.appendChild(modalTitle);
+    modalWindow.setAttribute("aria-describedby", "modalTitle");
+
+    // -- Titre de la modale ------------------------------------------------------------
+
+    modalMessageContainer = document.createElement("div");
+    modalMessageContainer.style.display = "none";
+    modalMessageContainer.style.alignItems = "center";
+    modalMessageContainer.style.justifyContent = "center";
+    modalMessageContainer.style.padding = "5px";
+    modalMessageContainer.style.marginTop = "25px";
+
+    modalWindow.appendChild(modalMessageContainer);
 
 /*
  ---------------------------------------------------
@@ -113,12 +126,6 @@ export function buildModalWindow () {
     modalPictureContainer.style.backgroundColor = "#E8F1F6";
     modalPicturePreview = document.createElement("img");
     modalPicturePreview.style.display = "none";
-    // modalPicturePreview.style.flexDirection = "column";
-    // modalPicturePreview.style.alignItems = "center";
-    // modalPicturePreview.style.justifyContent = "center";
-    // modalPicturePreview.style.width = "420px";
-    // modalPicturePreview.style.height = "169px";
-    // modalPicturePreview.style.backgroundColor = "#E8F1F6";
     modalPictureContainer.appendChild(modalPicturePreview);
     modalAddPhoto.appendChild(modalPictureContainer);
 
@@ -129,7 +136,7 @@ export function buildModalWindow () {
 
     // le bouton "+ Ajouter photo"
     modalAddPictureButton = document.createElement("button");
-    const modalRealHiddenAddPictureButton = document.createElement("input");
+    modalRealHiddenAddPictureButton = document.createElement("input");
     modalRealHiddenAddPictureButton.type = "file";
     modalRealHiddenAddPictureButton.accept = ".jpg, .png";
     modalRealHiddenAddPictureButton.style.display = "none";
@@ -155,42 +162,6 @@ export function buildModalWindow () {
     modalInstructions.style.color = "#444444";
     modalPictureContainer.appendChild(modalInstructions);
 
-    // NOTE: Début
-
-    modalRealHiddenAddPictureButton.addEventListener("change", (event) => {
-        selectedFile = event.target.files[0];
-
-        // if (selectedFile) { // lastModified name size type webkitRelativePath
-            // ("Nom du fichier:", selectedFile.name);
-            // ("Type de fichier:", selectedFile.type);
-            // ("Taille du fichier (en octets):", selectedFile.size);
-            // if (selectedFile.size > 4000000) { TOO BIG }
-            // if (selectedFile.type != ) { BAD FORMAT }
-        // }
-        console.log(selectedFile.type);
-        // image/x-icon
-        // text/plain
-
-        const imageUrl = URL.createObjectURL(selectedFile);
-        modalPicturePreview.src = imageUrl;
-        modalPicturePreview.style.maxHeight = "169px";
-        modalPicturePreview.style.width = "auto";
-
-        processAddPhoto();
-
-        // modalImg.style.display = "none";
-        // modalAddPictureButton.style.display = "none";
-        // modalInstructions.style.display = "none";
-        // modalPicturePreview.style.display = "flex";
-    });
-
-    // const formData = new FormData();
-    // formData.append("image", modalRealHiddenAddPictureButton.files[0]);
-    // formData.append("title", titleInputField.value);
-    // formData.append("category", categoryDropdown.value);
-
-    // NOTE: Fin
-
     // -- Formulaire d'ajout de photo ---------------------------------------------------
 
     // const modalFormContainer = document.createElement("form");
@@ -201,6 +172,7 @@ export function buildModalWindow () {
     const titleLabel = document.createElement("label");
     titleLabel.innerText = "Titre";
     titleLabel.style.color = "#3D3D3D";
+
     titleErrorCharCount = document.createElement("div");
     titleErrorCharCount.style.marginLeft = "45px";
     titleErrorCharCount.style.position = "absolute";
@@ -252,56 +224,20 @@ export function buildModalWindow () {
     // -- Bouton de submission du formulaire --------------------------------------------
 
     modalSubmitButton = createButton(modalWindow, "237px", "Ajouter une photo", true);
-    modalSubmitButton.addEventListener("click", () => submitForm(modalRealHiddenAddPictureButton, titleInputField, categoryDropdown));
+
     modalSubmitButton.style.margin = "50px";
 } // buildModalWindow ()
 
-function processAddPhoto () {
-    modalImg.style.display = "none";
-    modalAddPictureButton.style.display = "none";
-    modalInstructions.style.display = "none";
-    modalPicturePreview.style.display = "flex";
-}
+// export function reinitAddPhoto () {
+//     modalPicturePreview.innerHTML = "";
+//     modalPicturePreview.style.display = "none";
+//     titleInputField.innerText = "";
+//     selectedFile = null;
 
-function reinitAddPhoto () {
-    console.log("test");
-    modalPicturePreview.innerHTML = "";
-    modalPicturePreview.style.display = "none";
-    titleInputField.innerText = "";
-    selectedFile = null;
-
-    modalImg.style.display = "block";
-    modalAddPictureButton.style.display = "block";
-    modalInstructions.style.display = "block";
-}
-
-async function submitForm (modalRealHiddenAddPictureButton, titleInputField, categoryDropdown) {
-    const formData = new FormData();
-    formData.append("image", modalRealHiddenAddPictureButton.files[0]);
-    formData.append("title", titleInputField.value);
-    formData.append("category", categoryDropdown.value);
-
-    try {
-        const UserToken = window.localStorage.getItem("tokenID"); // FIXME: need a try
-
-        const response = await fetch("http://localhost:5678/api/works/", {
-            method: "POST",
-            body: formData,
-            headers: {
-                Authorization: `Bearer ${UserToken}`
-            }
-        });
-        if (response.ok) {
-            console.log("Item succefully created !");
-            reinitAddPhoto();
-        } else {
-            console.log("createItem() error : ", response);
-        }
-    } catch (error) {
-        console.log("Erreur de serveur : " + error);
-    }
-    updateAllGallery();
-}
+//     modalImg.style.display = "block";
+//     modalAddPictureButton.style.display = "block";
+//     modalInstructions.style.display = "block";
+// }
 
 export function modalSubmitButtonEnabled () {
     modalSubmitButton.style.background = color.green;

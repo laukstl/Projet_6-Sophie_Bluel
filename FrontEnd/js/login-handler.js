@@ -64,6 +64,6 @@ export async function checkLogin () {
             }
         }
     } catch (error) {
-        console.error("Une erreur est survenue ( " + error + " )");
+        console.error("Une erreur est survenue ( " + error + " )"); // TODO: NOT IN CONSOLE
     }
 } // checkLogin ()

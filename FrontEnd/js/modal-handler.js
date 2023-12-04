@@ -3,6 +3,7 @@
 import {
     modalReturnButton,
     modalCloseButton,
+    modalMessageContainer,
     modalSubmitButton,
     modalAddPhoto,
     modalTitle,
@@ -10,8 +11,12 @@ import {
     modalWindow,
     buildModalGalleryCards,
 
-    // modalAddPictureButton,
-    // modalRealHiddenAddPictureButton,
+    modalAddPictureButton,
+    modalRealHiddenAddPictureButton,
+
+    modalPicturePreview,
+    modalImg,
+    modalInstructions,
 
     titleInputField,
     titleErrorCharCount,
@@ -30,6 +35,32 @@ import {
 import {
     updatePortfolioCardsList // func
 } from "./main-handler.js";
+
+let selectedFile;
+
+// -- Affichage des messages de la modale -----------------------------------------------
+
+export function displayModalMessage (message, isError = null) {
+    modalMessageContainer.style.display = "flex";
+    modalMessageContainer.innerHTML = "";
+
+    if (isError === true) {
+        modalMessageContainer.style.color = "red";
+        modalMessageContainer.style.backgroundColor = "#FFDDDD";
+        modalMessageContainer.style.border = "1px red solid";
+    } else if (isError === false) {
+        modalMessageContainer.style.color = "green";
+        modalMessageContainer.style.backgroundColor = "#DDFFDD";
+        modalMessageContainer.style.border = "1px green solid";
+    } else {
+        modalMessageContainer.style.color = "black";
+        modalMessageContainer.style.backgroundColor = "#DDDDDD";
+        modalMessageContainer.style.border = "1px black solid";
+    }
+
+    modalMessageContainer.style.textAlign = "center";
+    modalMessageContainer.innerHTML = message;
+}
 
 // -- Affichage de la gallery de la modale ----------------------------------------------
 
@@ -57,7 +88,17 @@ export function displayAddPhoto () {
     // on affiche
     modalAddPhoto.style.display = "flex";
 
+    modalPicturePreview.innerHTML = "";
+    modalPicturePreview.style.display = "none";
+    titleInputField.innerText = "";
+    selectedFile = null;
+
+    modalImg.style.display = "block";
+    modalAddPictureButton.style.display = "block";
+    modalInstructions.style.display = "block";
+
     modalButtonHandler("no-gal");
+    fileSelectionAndTest();
 }
 
 /*
@@ -68,10 +109,17 @@ export function displayAddPhoto () {
 
 // -- Affichage de la modale ------------------------------------------------------------
 
+const main = document.querySelector("main");
+
 export function displayModal () { // TODO: Gérer les removeListener
-    // TODO: rendre inactif l'arrière plan
     displayPhotoGallery();
+
     modalWindow.style.display = "flex";
+
+    modalWindow.ariaHidden = "false";
+    main.ariaHidden = "true";
+
+    modalMessageContainer.style.display = "none";
 
     // setTimeout pour éviter que la func modalClickHandler ne soit immédiatement lancé au click d'ouverture
     // apparement, js propage l'eventListener en même temps qu'il affiche la fenêtre...
@@ -84,7 +132,10 @@ export function displayModal () { // TODO: Gérer les removeListener
 
     modalCloseButton.addEventListener('click', () => hideModal());
 
-    modalReturnButton.addEventListener("click", () => displayPhotoGallery()); // flèche de retour
+    modalReturnButton.addEventListener("click", () => {
+            displayPhotoGallery();
+            modalMessageContainer.style.display = "none";
+    }); // flèche de retour
 
     document.addEventListener("keydown", modalKeydownHandler);
 }
@@ -96,6 +147,8 @@ export function hideModal () {
     document.removeEventListener("keydown", modalKeydownHandler);
 
     modalWindow.style.display = "none";
+    modalWindow.ariaHidden = "true";
+    main.ariaHidden = "false";
 }
 
 // -- Gestion des comportements du Click et Escape --------------------------------------
@@ -126,7 +179,12 @@ export async function deleteCard (item) {
     const id = item.id;
 
     try {
-        const UserToken = window.localStorage.getItem("tokenID"); // FIXME: need a try
+        let UserToken;
+        try {
+            UserToken = window.localStorage.getItem("tokenID");
+        } catch (error) {
+            displayModalMessage("La récupération du token a échoué !", true);
+        }
 
         const response = await fetch(`http://localhost:5678/api/works/${id}`, {
             method: "DELETE",
@@ -134,21 +192,16 @@ export async function deleteCard (item) {
                 Authorization: `Bearer ${UserToken}`
             }
         });
+
         if (response.ok) {
-            console.log("Item succefully deleted !");
-            // cardsToDisplay.splice(index, 1);
+            displayModalMessage("Carte effacée ! <br>-<br> " + response.statusText + " ( code " + response.status + " )", false);
         } else {
-            console.log("deleteItem() error : ", response);
+            displayModalMessage("L'effacement de la carte a échouée !<br>-<br> " + response.statusText + " ( code " + response.status + " )", true);
         }
     } catch (error) {
-        console.log("Erreur de serveur : " + error);
+        displayModalMessage("Erreur du serveur : " + error, true);
     }
 
-    // // mets à jour les 2 gallerieS à partir d'un new fetch de la liste du server
-    // if (await fetchCards()) {
-    //     buildModalGalleryCards();
-    //     updatePortfolioCardsList();
-    // }
     updateAllGallery();
 } // deleteCard (item)
 
@@ -159,10 +212,6 @@ export async function updateAllGallery () {
         updatePortfolioCardsList();
     }
 }
-
-// export async function addCard (item) {
-
-// }
 
 // -- Ajout d'une image -----------------------------------------------------------------
 
@@ -196,6 +245,18 @@ function modalButtonHandler (window) {
         } else {
             modalSubmitButtonDisabled();
         }
+
+        modalSubmitButton.removeEventListener("click", () => displayAddPhoto());
+
+        modalSubmitButton.addEventListener("click", (event) => { // NOTE: le fameux bouton qui est TROP multifonction
+            console.log(modalSubmitButton.disabled);
+            // if (modalSubmitButtonState === "add") {
+            if (modalSubmitButton.disabled === false) {
+                // --
+            } else {
+                submitForm(modalRealHiddenAddPictureButton, titleInputField, categoryDropdown);
+            }
+        }); // click
     }
 
     // changement du comportement du bouton en fonction du nombre de charactère dans l'inputField
@@ -216,5 +277,72 @@ function modalButtonHandler (window) {
             titleErrorCharCount.style.color = "red";
             modalSubmitButtonDisabled();
         }
+    });
+}
+
+async function submitForm (modalRealHiddenAddPictureButton, titleInputField, categoryDropdown) {
+    const formData = new FormData();
+    formData.append("image", modalRealHiddenAddPictureButton.files[0]);
+    formData.append("title", titleInputField.value);
+    formData.append("category", categoryDropdown.value);
+
+    try {
+        let UserToken;
+        try {
+            UserToken = window.localStorage.getItem("tokenID");
+        } catch (error) {
+            displayModalMessage("La récupération du token a échoué !", true);
+        }
+
+        const response = await fetch("http://localhost:5678/api/works/", {
+            method: "POST",
+            body: formData,
+            headers: {
+                Authorization: `Bearer ${UserToken}`
+            }
+        });
+        if (response.ok) {
+            displayModalMessage("La création de la carte " + toString(titleInputField) + " a réussie !<br>-<br>" + response.statusText + " ( code " + response.status + " )", false);
+
+            // reinitAddPhoto();
+            displayAddPhoto();
+        } else {
+            displayModalMessage("La création de la carte " + toString(titleInputField.value) + " a échouée !<br>-<br> " + response.statusText + " ( code " + response.status + " )", true);
+        }
+    } catch (error) {
+        displayModalMessage("Erreur de serveur :<br>" + error, true);
+    }
+    updateAllGallery();
+}
+
+function fileSelectionAndTest () {
+    modalRealHiddenAddPictureButton.addEventListener("change", (event) => {
+        selectedFile = event.target.files[0];
+
+        // ("Nom du fichier:", selectedFile.name);
+
+        if (selectedFile.size > 4000000) {
+            displayModalMessage("Le fichier doit être inférieur à 4Mo", true);
+            return;
+        }
+
+        if (selectedFile.type !== "image/jpeg" && selectedFile.type !== "image/png") {
+            displayModalMessage("Seuls les .JPG et les .PNG sont acceptés", true);
+            return;
+        }
+
+        modalMessageContainer.style.display = "none";
+
+        // display the thumbail
+        const imageUrl = URL.createObjectURL(selectedFile);
+        modalPicturePreview.style.display = "flex";
+        modalPicturePreview.src = imageUrl;
+        modalPicturePreview.style.maxHeight = "169px";
+        modalPicturePreview.style.width = "auto";
+
+        // hide helpers
+        modalImg.style.display = "none";
+        modalAddPictureButton.style.display = "none";
+        modalInstructions.style.display = "none";
     });
 }
