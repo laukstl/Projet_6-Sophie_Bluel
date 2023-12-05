@@ -10,8 +10,8 @@ import {
 } from "../modal-handler.js";
 
 export let modalWindow, modalReturnButton, modalTitle, modalCloseButton, modalMessageContainer, modalGallery, modalAddPhoto, modalSubmitButton;
-export let titleInputField, titleErrorCharCount, titleErrorAlphaNumChar, categoryDropdown;
-export let modalAddPictureButton, modalRealHiddenAddPictureButton;
+export let photoTitleInputField, photoTitleErrorMessageCount, photoTitleErrorMessageAlphaNum, categoryDropdown;
+export let modalAddPhotoButton, modalRealHiddenAddPictureButton;
 export let modalInstructions, modalPicturePreview, modalImg;
 
 export function buildModalWindow () {
@@ -70,14 +70,15 @@ export function buildModalWindow () {
     modalWindow.appendChild(modalTitle);
     modalWindow.setAttribute("aria-describedby", "modalTitle");
 
-    // -- Titre de la modale ------------------------------------------------------------
+    // -- Messages d'informations/erreurs de la modale ----------------------------------
 
     modalMessageContainer = document.createElement("div");
     modalMessageContainer.style.display = "none";
+    modalMessageContainer.style.position = "absolute";
+    modalMessageContainer.style.top = "95px";
     modalMessageContainer.style.alignItems = "center";
     modalMessageContainer.style.justifyContent = "center";
     modalMessageContainer.style.padding = "5px";
-    modalMessageContainer.style.marginTop = "25px";
 
     modalWindow.appendChild(modalMessageContainer);
 
@@ -93,6 +94,7 @@ export function buildModalWindow () {
     modalGallery.style["grid-template-columns"] = "1fr 1fr 1fr 1fr 1fr";
     modalGallery.style["grid-column-gap"] = "20px";
     modalGallery.style["grid-row-gap"] = "20px";
+    // modalGallery.style.margin = "30px 105px 60px 105px";
     modalGallery.style.margin = "60px 105px";
     modalWindow.appendChild(modalGallery);
     modalGallery.style.display = "none";
@@ -115,90 +117,91 @@ export function buildModalWindow () {
 
     // -- Container pour la sélection d'une photo ---------------------------------------
 
-    const modalPictureContainer = document.createElement("div");
-    modalPictureContainer.style.display = "flex";
-    modalPictureContainer.style.flexDirection = "column";
-    modalPictureContainer.style.alignItems = "center";
-    modalPictureContainer.style.justifyContent = "center";
-    modalPictureContainer.style.gap = "10px";
-    modalPictureContainer.style.width = "420px";
-    modalPictureContainer.style.height = "169px";
-    modalPictureContainer.style.backgroundColor = "#E8F1F6";
+    const modalPhotoContainer = document.createElement("div");
+    modalPhotoContainer.style.display = "flex";
+    modalPhotoContainer.style.flexDirection = "column";
+    modalPhotoContainer.style.alignItems = "center";
+    modalPhotoContainer.style.justifyContent = "center";
+    modalPhotoContainer.style.gap = "10px";
+    modalPhotoContainer.style.width = "420px";
+    modalPhotoContainer.style.height = "169px";
+    modalPhotoContainer.style.backgroundColor = "#E8F1F6";
     modalPicturePreview = document.createElement("img");
     modalPicturePreview.style.display = "none";
-    modalPictureContainer.appendChild(modalPicturePreview);
-    modalAddPhoto.appendChild(modalPictureContainer);
+    modalPhotoContainer.appendChild(modalPicturePreview);
+    modalAddPhoto.appendChild(modalPhotoContainer);
 
     // l'image de démonstration
     modalImg = document.createElement("img");
     modalImg.src = "./assets/icons/picture.svg";
-    modalPictureContainer.appendChild(modalImg);
+    modalPhotoContainer.appendChild(modalImg);
 
     // le bouton "+ Ajouter photo"
-    modalAddPictureButton = document.createElement("button");
+    modalAddPhotoButton = document.createElement("button");
     modalRealHiddenAddPictureButton = document.createElement("input");
     modalRealHiddenAddPictureButton.type = "file";
     modalRealHiddenAddPictureButton.accept = ".jpg, .png";
     modalRealHiddenAddPictureButton.style.display = "none";
-    modalAddPictureButton.style.borderRadius = "60px";
-    modalAddPictureButton.style.backgroundColor = "#CBD6DC";
-    modalAddPictureButton.style.border = "#CBD6DC";
-    modalAddPictureButton.style.padding = "8px 15px";
-    modalAddPictureButton.style.width = "173px";
-    modalAddPictureButton.style.height = "36px";
-    modalAddPictureButton.style.cursor = "pointer";
-    modalAddPictureButton.style.fontFamily = "Work Sans";
-    modalAddPictureButton.style.fontWeight = "500";
-    modalAddPictureButton.style.fontSize = "14px";
-    modalAddPictureButton.style.color = "#306685";
-    modalAddPictureButton.textContent = "+ Ajouter photo";
-    modalAddPictureButton.addEventListener("click", () => modalRealHiddenAddPictureButton.click());
-    modalPictureContainer.appendChild(modalAddPictureButton);
-    modalPictureContainer.appendChild(modalRealHiddenAddPictureButton);
+    modalAddPhotoButton.style.borderRadius = "60px";
+    modalAddPhotoButton.style.backgroundColor = "#CBD6DC";
+    modalAddPhotoButton.style.border = "#CBD6DC";
+    modalAddPhotoButton.style.padding = "8px 15px";
+    modalAddPhotoButton.style.width = "173px";
+    modalAddPhotoButton.style.height = "36px";
+    modalAddPhotoButton.style.cursor = "pointer";
+    modalAddPhotoButton.style.fontFamily = "Work Sans";
+    modalAddPhotoButton.style.fontWeight = "500";
+    modalAddPhotoButton.style.fontSize = "14px";
+    modalAddPhotoButton.style.color = "#306685";
+    modalAddPhotoButton.textContent = "+ Ajouter photo";
+    modalAddPhotoButton.addEventListener("click", () => modalRealHiddenAddPictureButton.click());
+    modalPhotoContainer.appendChild(modalAddPhotoButton);
+    modalPhotoContainer.appendChild(modalRealHiddenAddPictureButton);
 
     // les instructions de formats acceptés
     modalInstructions = document.createElement("div");
     modalInstructions.innerText = "jpg, png : 4mo max";
     modalInstructions.style.color = "#444444";
-    modalPictureContainer.appendChild(modalInstructions);
+    modalPhotoContainer.appendChild(modalInstructions);
 
     // -- Formulaire d'ajout de photo ---------------------------------------------------
 
     // const modalFormContainer = document.createElement("form");
     // Titre
-    const titleContainer = document.createElement("div");
-    titleContainer.style.display = "flex";
-    titleContainer.style.position = "relative";
-    const titleLabel = document.createElement("label");
-    titleLabel.innerText = "Titre";
-    titleLabel.style.color = "#3D3D3D";
+    const photoTitleContainer = document.createElement("div");
+    photoTitleContainer.style.display = "flex";
+    photoTitleContainer.style.position = "relative";
+    const photoTitleLabel = document.createElement("label");
+    photoTitleLabel.innerText = "Titre";
+    photoTitleLabel.style.color = "#3D3D3D";
 
-    titleErrorCharCount = document.createElement("div");
-    titleErrorCharCount.style.marginLeft = "45px";
-    titleErrorCharCount.style.position = "absolute";
-    titleErrorCharCount.style.top = "-7px";
-    titleErrorCharCount.style.color = "lightgrey";
-    titleErrorCharCount.innerText = "Minimum 4 caractères";
-    titleErrorAlphaNumChar = document.createElement("div");
-    titleErrorAlphaNumChar.style.marginLeft = "45px";
-    titleErrorAlphaNumChar.style.position = "absolute";
-    titleErrorAlphaNumChar.style.top = "7px";
-    titleErrorAlphaNumChar.style.color = "lightgrey";
-    titleErrorAlphaNumChar.innerText = "Chiffres, lettres, et caractères - . & _ autorisés";
-    titleContainer.appendChild(titleLabel);
-    titleContainer.appendChild(titleErrorCharCount);
-    titleContainer.appendChild(titleErrorAlphaNumChar);
+    photoTitleErrorMessageCount = document.createElement("div");
+    photoTitleErrorMessageCount.style.marginLeft = "45px";
+    photoTitleErrorMessageCount.style.position = "absolute";
+    photoTitleErrorMessageCount.style.top = "-7px";
+    photoTitleErrorMessageCount.style.color = "lightgrey";
+    photoTitleErrorMessageCount.innerText = "Minimum 4 caractères";
+    photoTitleErrorMessageAlphaNum = document.createElement("div");
+    photoTitleErrorMessageAlphaNum.style.marginLeft = "45px";
+    photoTitleErrorMessageAlphaNum.style.position = "absolute";
+    photoTitleErrorMessageAlphaNum.style.top = "7px";
+    photoTitleErrorMessageAlphaNum.style.color = "lightgrey";
+    photoTitleErrorMessageAlphaNum.innerText = "Chiffres, lettres, et caractères - . & _ autorisés";
 
-    titleInputField = document.createElement("input");
-    titleInputField.style.height = "51px";
-    titleInputField.style.color = "#3D3D3D";
-    titleInputField.style.paddingLeft = "16px";
-    titleInputField.style.boxShadow = "0px 4px 14px rgba(0, 0, 0, 0.09)";
-    titleInputField.style.border = "none";
+    photoTitleContainer.appendChild(photoTitleLabel);
+    photoTitleContainer.appendChild(photoTitleErrorMessageCount);
+    photoTitleContainer.appendChild(photoTitleErrorMessageAlphaNum);
+
+    photoTitleInputField = document.createElement("input");
+    photoTitleInputField.style.height = "51px";
+    photoTitleInputField.style.color = "#3D3D3D";
+    photoTitleInputField.style.paddingLeft = "16px";
+    photoTitleInputField.style.boxShadow = "0px 4px 14px rgba(0, 0, 0, 0.09)";
+    photoTitleInputField.style.border = "none";
     // Catégorie
-    const labelCategory = document.createElement("label");
-    labelCategory.innerText = "Catégorie";
-    labelCategory.style.color = "#3D3D3D";
+    const categoryLabel = document.createElement("label");
+    categoryLabel.innerText = "Catégorie";
+    categoryLabel.style.color = "#3D3D3D";
     categoryDropdown = document.createElement("select");
     categoryDropdown.style.height = "51px";
     categoryDropdown.style.color = "#3D3D3D";
@@ -208,9 +211,9 @@ export function buildModalWindow () {
 
     formHandler();
 
-    modalAddPhoto.appendChild(titleContainer);
-    modalAddPhoto.appendChild(titleInputField);
-    modalAddPhoto.appendChild(labelCategory);
+    modalAddPhoto.appendChild(photoTitleContainer);
+    modalAddPhoto.appendChild(photoTitleInputField);
+    modalAddPhoto.appendChild(categoryLabel);
     modalAddPhoto.appendChild(categoryDropdown);
 
     // -- Trait horizontal de séparation ------------------------------------------------
@@ -231,11 +234,11 @@ export function buildModalWindow () {
 // export function reinitAddPhoto () {
 //     modalPicturePreview.innerHTML = "";
 //     modalPicturePreview.style.display = "none";
-//     titleInputField.innerText = "";
+//     photoTitleInputField.innerText = "";
 //     selectedFile = null;
 
 //     modalImg.style.display = "block";
-//     modalAddPictureButton.style.display = "block";
+//     modalAddPhotoButton.style.display = "block";
 //     modalInstructions.style.display = "block";
 // }
 
@@ -324,3 +327,30 @@ export function buildModalGalleryCards () {
         });
     }
 } // buildModalGalleryCards (cards)
+
+// -- Affichage des messages/erreurs de la modale ---------------------------------------
+
+export function displayModalMessage (message, isError = null) {
+    modalMessageContainer.style.display = "flex";
+    modalMessageContainer.innerHTML = "";
+
+    if (isError === true) {
+        modalMessageContainer.style.color = "red";
+        modalMessageContainer.style.backgroundColor = "#FFDDDD";
+        modalMessageContainer.style.border = "1px red solid";
+    } else if (isError === false) {
+        modalMessageContainer.style.color = "green";
+        modalMessageContainer.style.backgroundColor = "#DDFFDD";
+        modalMessageContainer.style.border = "1px green solid";
+    } else {
+        modalMessageContainer.style.color = "black";
+        modalMessageContainer.style.backgroundColor = "#DDDDDD";
+        modalMessageContainer.style.border = "1px black solid";
+    }
+
+    modalMessageContainer.style.textAlign = "center";
+    modalMessageContainer.innerHTML = message;
+    setTimeout(() => {
+        modalMessageContainer.style.display = "none";
+    }, 7500);
+}

@@ -1,4 +1,3 @@
-/* eslint-disable no-return-assign */
 import { cssTweak } from "./ui/csstweak.js";
 
 import * as color from "./ui/colors.js";
@@ -71,7 +70,6 @@ export function buildPortfolioCategoryButtons () {
         const button = createButton(category, null, categoryList[k].name);
         button.style.marginLeft = "15px";
         button.classList.add("categoryButtons");
-        // categoryButtons.push({ id: categoryList[k].id, name: categoryList[k].name });
         categoryButtons.push(button);
         button.addEventListener("click", () => {
             categorySelected = categoryList[k].id;
@@ -146,11 +144,12 @@ function loginLogoutLinkHandler () {
     let isConnected = false;
     const linkLogin = document.getElementById("nav__login");
     linkLogin.addEventListener("click", () => {
-        if (!isConnected) { // To LogIn page
+        if (!isConnected) { // LogIn
             loginContainer.style.display = "block";
             main.style.display = "none";
-            loginButton.addEventListener("click", (event) => {
-                if (checkLogin()) { // LogIn
+            loginButton.addEventListener("click", async (event) => {
+                // console.log("straight", checkLogin(), "await", await checkLogin());
+                if (await checkLogin()) { // LogIn
                     isConnected = true;
                     linkLogin.innerText = "logout";
 
@@ -160,7 +159,7 @@ function loginLogoutLinkHandler () {
                     category.style.display = "none";
                     main.style.display = "block";
                 } else {
-                    // TODO: Message d'erreur ?
+                    // log(time + " - Login failed ! - " + userID + " - IP " + IP);
                 }
             });
         } else { // LogOut
@@ -175,7 +174,7 @@ function loginLogoutLinkHandler () {
                 window.localStorage.removeItem("userID");
                 window.localStorage.removeItem("tokenID");
             } catch (error) {
-                console.log("Unexpected error: " + error); // TODO: Not in console !
+                console.log("Error de nettoyage des tokens : " + error); // TODO: Not in console !
             }
         }
     });

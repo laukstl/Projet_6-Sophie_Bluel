@@ -77,7 +77,7 @@ export function buildEditMode () {
 
 // -- Gestion de laffichage des erreurs -------------------------------------------------
 
-export function displayErrorMessage (titleLabel = "", title = "", error = "None.") {
+export function displayErrorMessage (photoTitleLabel = "", title = "", error = "None.") {
     const errors = document.getElementById("errors");
     // const introduction = document.getElementById("introduction");
     const portfolio = document.getElementById("portfolio");
@@ -109,7 +109,7 @@ export function displayErrorMessage (titleLabel = "", title = "", error = "None.
     errorTitleLabel.style.fontWeight = "700";
     errorTitleLabel.style.fontSize = "30px";
     errorTitleLabel.style.color = "#1D6154";
-    errorTitleLabel.innerHTML = titleLabel;
+    errorTitleLabel.innerHTML = photoTitleLabel;
 
     const errorTitle = document.createElement("div");
     errorTitle.style.display = "flex";

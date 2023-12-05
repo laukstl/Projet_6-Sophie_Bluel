@@ -1,8 +1,9 @@
 import { createButton } from "./button.js";
 
-export let loginContainer, emailInput, passwordInput, loginErrorMessage, loginButton;
+export let loginContainer, loginButton; // TO: main-handler
+export let emailInput, passwordInput, loginErrorMessage; // TO: login-handler
 
-export function buildLoginWindow () {
+export function buildLoginWindow () { // TO: main-handler
     // création section LOGIN
     const login = document.createElement("form");
     loginContainer = document.getElementById("loginContainer");

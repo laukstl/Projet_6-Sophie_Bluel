@@ -1,36 +1,38 @@
 import {
-    loginErrorMessage // <p>
+    loginErrorMessage,
+    emailInput,
+    passwordInput
 } from "./ui/login-ui.js";
 
 let userId = null;
 let userToken = null;
 
 export async function checkLogin () {
-    // Valeurs pour tests
-    const userData = {
-        email: "sophie.bluel@test.tld",
-        password: "S0phie"
-    };
+    // Valeurs test:
     // const userData = {
-    //     email: emailInput.value,
-    //     password: passwordInput.value
+    //     email: "sophie.bluelte@test.tld",
+    //     password: "S0phie"
     // };
 
+    const userData = {
+        email: emailInput.value,
+        password: passwordInput.value
+    };
+
     // Vérification de la bonne forme de l'email
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,5}$/;
     if (userData.email.trim() === "") { // Test champ vide
         loginErrorMessage.innerText = "Le champ email ne peut pas être vide";
-        return;
-    }
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,5}$/;
-    if (!emailRegex.test(userData.email)) { // Test conformormité au Regex
+        return false;
+    } else if (!emailRegex.test(userData.email)) { // Test conformormité au Regex
         loginErrorMessage.innerText = "Entrez une adresse E-mail valide";
-        return;
+        return false;
     }
 
     // Vérification de la bonne forme du mot de passe
     if (userData.password.length < 5) {
         loginErrorMessage.innerText = "Le mot de passe doit contenir au moins 5 caractères";
-        return;
+        return false;
     }
 
     try {
