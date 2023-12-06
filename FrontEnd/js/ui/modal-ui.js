@@ -9,7 +9,7 @@ import {
     formHandler
 } from "../modal-handler.js";
 
-export let modalWindow, modalReturnButton, modalTitle, modalCloseButton, modalMessageContainer, modalGallery, modalAddPhoto, modalSubmitButton;
+export let modalWindow, modalReturnButton, modalTitle, modalCloseButton, modalMessageContainer, modalGallery, modalAddPhoto, modalSubmitButton, modalGalleryButton;
 export let photoTitleInputField, photoTitleErrorMessageCount, photoTitleErrorMessageAlphaNum, categoryDropdown;
 export let modalAddPhotoButton, modalRealHiddenAddPictureButton;
 export let modalInstructions, modalPicturePreview, modalImg;
@@ -224,23 +224,16 @@ export function buildModalWindow () {
     modalHorizontalLine.style.borderBottom = "1px solid #B3B3B3";
     modalWindow.appendChild(modalHorizontalLine);
 
+    // -- Bouton-lien vers la page d'ajout de photo -------------------------------------
+
+    modalGalleryButton = createButton(modalWindow, "237px", "Ajouter une photo", true);
+    modalGalleryButton.style.margin = "50px";
+
     // -- Bouton de submission du formulaire --------------------------------------------
 
-    modalSubmitButton = createButton(modalWindow, "237px", "Ajouter une photo", true);
-
+    modalSubmitButton = createButton(modalWindow, "237px", "envoyer", true);
     modalSubmitButton.style.margin = "50px";
-} // buildModalWindow ()
-
-// export function reinitAddPhoto () {
-//     modalPicturePreview.innerHTML = "";
-//     modalPicturePreview.style.display = "none";
-//     photoTitleInputField.innerText = "";
-//     selectedFile = null;
-
-//     modalImg.style.display = "block";
-//     modalAddPhotoButton.style.display = "block";
-//     modalInstructions.style.display = "block";
-// }
+}
 
 export function modalSubmitButtonEnabled () {
     modalSubmitButton.style.background = color.green;

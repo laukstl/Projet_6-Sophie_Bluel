@@ -3,7 +3,7 @@ import {
 } from "../../script.js";
 
 import {
-    displayModal // func
+    displayModalWindow // func
 } from "../modal-handler.js";
 
 import {
@@ -71,7 +71,7 @@ export function buildEditMode () {
     // update and display the modal
     portfolioBannerLinkContainer.addEventListener("click", () => {
             buildModalGalleryCards(generalVar.cardsList);
-            displayModal();
+            displayModalWindow();
         });
 }
 

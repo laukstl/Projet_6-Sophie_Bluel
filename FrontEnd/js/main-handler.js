@@ -13,7 +13,7 @@ import {
 import { checkLogin } from "../js/login-handler.js";
 
 import {
-    hideModal
+    hideModalWindow
 } from "./modal-handler.js";
 
 import { buildModalWindow } from "./ui/modal-ui.js";
@@ -168,7 +168,7 @@ function loginLogoutLinkHandler () {
             portfolioBannerLinkContainer.style.display = "none";
             banner.style.display = "none";
             category.style.display = "block";
-            hideModal();
+            hideModalWindow();
             // delete id and token
             try {
                 window.localStorage.removeItem("userID");
