@@ -3,7 +3,7 @@ import {
 } from "../../script.js";
 
 import {
-    displayModalWindow // func
+    displayModalWindow
 } from "../modal-handler.js";
 
 import {
@@ -41,7 +41,7 @@ export function buildEditMode () {
     portfolioBanner.style.display = "flex";
     portfolioBanner.style.justifyContent = "center";
     portfolioBanner.style.alignItems = "center";
-    portfolioBanner.style.margin = "130px 0 100px 0";
+    portfolioBanner.style.margin = "130px 0 50px 0";
 
         // Titre de la section du portfolio
         const portfolioTitleText = document.querySelector("#portfolioTitle > h2");
@@ -79,25 +79,26 @@ export function buildEditMode () {
 
 export function displayErrorMessage (photoTitleLabel = "", title = "", error = "None.") {
     const errors = document.getElementById("errors");
-    // const introduction = document.getElementById("introduction");
     const portfolio = document.getElementById("portfolio");
 
     const errorMessageContact = document.querySelector("#contact p");
     errorMessageContact.innerText = "Désole pour ce contre-temps. Vous pouvez toujours nous contacter :";
 
-    // introduction.style.display = "none";
     portfolio.style.display = "none";
     errors.style.marginBottom = "30px";
 
     const errorContainer = document.createElement("div");
-    errorContainer.style.margin = "auto 15%";
+    errorContainer.style.margin = "auto";
     errorContainer.style.zIndex = "9999";
     errorContainer.style.position = "absolute";
+    errorContainer.style.maxWidth = "500px";
+    errorContainer.style.left = 0;
+    errorContainer.style.right = 0;
     errorContainer.style.top = "180px";
     errorContainer.style.color = "red";
     errorContainer.style.border = "2px solid red";
     errorContainer.style.padding = "15px";
-    errorContainer.style.backgroundColor = "rgba(255,255,255,0.85)";
+    errorContainer.style.backgroundColor = "rgba(255,255,200,0.85)";
     errorContainer.style.wordWrap = "break-word";
     // errorContainer.style.backgroundColor = "#FF0";
 

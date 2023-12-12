@@ -5,8 +5,8 @@ import * as color from "./ui/colors.js";
 import { createButton } from "./ui/button.js";
 
 import {
-    loginContainer, // <div> container HTML
-    loginButton, // <button>
+    loginContainer,
+    loginButton,
     buildLoginWindow
 } from "./ui/login-ui.js";
 
@@ -71,12 +71,14 @@ export function buildPortfolioCategoryButtons () {
         button.style.marginLeft = "15px";
         button.classList.add("categoryButtons");
         categoryButtons.push(button);
-        button.addEventListener("click", () => {
-            categorySelected = categoryList[k].id;
-            updatePortfolioCategoryButtonsColor();
-            updatePortfolioCardsList();
-        });
+        button.addEventListener("click", () => portfolioButtonClickHandler(k));
     }
+}
+
+function portfolioButtonClickHandler (k) {
+    categorySelected = categoryList[k].id;
+    updatePortfolioCategoryButtonsColor();
+    updatePortfolioCardsList();
 }
 
 function updatePortfolioCategoryButtonsColor () {
@@ -124,6 +126,7 @@ function displayPortfolioCards (cardsToDisplay) {
 
             const figcaption = document.createElement("figcaption");
             figcaption.textContent = item.title;
+            figcaption.style.color = "#3D3D3D";
             card.appendChild(figcaption);
         });
     }
@@ -136,32 +139,19 @@ function displayPortfolioCards (cardsToDisplay) {
 */
 
 // -- Gestion du comportement du lien Login/Logout --------------------------------------
+const linkLogin = document.getElementById("nav__login");
+const main = document.querySelector("main");
+let isConnected = false;
 
 function loginLogoutLinkHandler () {
     // container central ( entre le header et le footer )
-    const main = document.querySelector("main");
-
-    let isConnected = false;
-    const linkLogin = document.getElementById("nav__login");
     linkLogin.addEventListener("click", () => {
         if (!isConnected) { // LogIn
             loginContainer.style.display = "block";
+            loginContainer.ariaHidden = "false";
             main.style.display = "none";
-            loginButton.addEventListener("click", async (event) => {
-                // console.log("straight", checkLogin(), "await", await checkLogin());
-                if (await checkLogin()) { // LogIn
-                    isConnected = true;
-                    linkLogin.innerText = "logout";
-
-                    banner.style.display = "flex";
-                    portfolioBannerLinkContainer.style.display = "flex";
-                    loginContainer.style.display = "none";
-                    category.style.display = "none";
-                    main.style.display = "block";
-                } else {
-                    // log(time + " - Login failed ! - " + userID + " - IP " + IP);
-                }
-            });
+            main.ariaHidden = "true";
+            loginButton.addEventListener("click", loginButtonClickHandler);
         } else { // LogOut
             isConnected = false;
             linkLogin.innerText = "login";
@@ -174,8 +164,30 @@ function loginLogoutLinkHandler () {
                 window.localStorage.removeItem("userID");
                 window.localStorage.removeItem("tokenID");
             } catch (error) {
-                console.log("Error de nettoyage des tokens : " + error); // TODO: Not in console !
+                console.log("Error de nettoyage des tokens : " + error);
             }
         }
     });
+}
+
+async function loginButtonClickHandler () {
+    if (await checkLogin()) { // LogIn
+        isConnected = true;
+        linkLogin.innerText = "logout";
+
+        banner.style.display = "flex";
+        portfolioBannerLinkContainer.style.display = "flex";
+
+        loginContainer.style.display = "none";
+        loginContainer.ariaHidden = "true";
+
+        category.style.display = "none";
+
+        main.style.display = "block";
+        main.ariaHidden = "false";
+
+        loginButton.removeEventListener("click", loginButtonClickHandler);
+    } else {
+        // log(time + " - Login failed ! - " + userID + " - IP " + IP);
+    }
 }

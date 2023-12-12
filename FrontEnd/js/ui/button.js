@@ -10,7 +10,6 @@ import * as color from "./colors.js";
 */
 
 export function createButton (container, width = null, text = "Click!", reverseColor = false) {
-    // .height = "36px";
     const button = document.createElement("button");
     button.classList.add("button");
 

@@ -7,3 +7,13 @@ package-lock.json
 package-lock.json
 .vscode/settings.json
 Backend/
+FrontEnd/js/js/main-handler.dev.js
+FrontEnd/js/ui/js/login-ui.dev.js
+FrontEnd/js/ui/js/modal-ui.dev.js
+package.json
+FrontEnd/js/ui/js/main-ui.dev.js
+FrontEnd/js/js/modal-handler.dev.js
+FrontEnd/js/ui/js/csstweak.dev.js
+FrontEnd/js/ui/js/button.dev.js
+FrontEnd/js/js/login-handler.dev.js
+FrontEnd/js/script.dev.js

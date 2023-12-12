@@ -39,8 +39,10 @@ export function buildLoginWindow () { // TO: main-handler
     const emailLabel = document.createElement("label");
     emailLabel.innerText = "E-mail";
     emailLabel.style["font-weight"] = "500";
+    emailLabel.style.color = "#3D3D3D";
     emailContainer.appendChild(emailLabel);
     emailInput = document.createElement("input");
+    emailInput.autocomplete = "email";
     emailInput.id = "login_email_id";
     emailInput.type = "email";
     emailInput.style["font-size"] = "20px";
@@ -62,8 +64,10 @@ export function buildLoginWindow () { // TO: main-handler
     const passwordLabel = document.createElement("label");
     passwordLabel.innerText = "Mot de passe";
     passwordLabel.style["font-weight"] = "500";
+    passwordLabel.style.color = "#3D3D3D";
     passwordContainer.appendChild(passwordLabel);
     passwordInput = document.createElement("input");
+    passwordInput.autocomplete = "current-password";
     passwordInput.id = "login_password_id";
     passwordInput.type = "password";
     passwordInput.style["font-size"] = "20px";
@@ -76,14 +80,14 @@ export function buildLoginWindow () { // TO: main-handler
 
     // Bouton de submit - section LOGIN
     loginButton = createButton(login, "180px", "Se connecter", true);
-    loginButton.style.height = "51px";
+    loginButton.style.height = "36px";
     loginButton.style.fontSize = "14px";
 
     // Lien mot de passe oublié - section LOGIN
     const linkPwdForgotten = document.createElement("a");
     linkPwdForgotten.setAttribute("href", "#");
     linkPwdForgotten.innerText = "Mot de passe oublié";
-    linkPwdForgotten.style.color = "inherit";
+    linkPwdForgotten.style.color = "#3D3D3D";
     linkPwdForgotten.style["font-weight"] = "500";
     login.appendChild(linkPwdForgotten);
 } // buildLoginWindow ()

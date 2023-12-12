@@ -53,6 +53,8 @@ export async function checkLogin () {
             window.localStorage.setItem("userID", userId);
             window.localStorage.setItem("tokenID", userToken);
 
+            loginErrorMessage.innerText = "";
+
             return true;
         } else {
             if (responseLogin.status === 401) {
@@ -66,6 +68,6 @@ export async function checkLogin () {
             }
         }
     } catch (error) {
-        console.error("Une erreur est survenue ( " + error + " )"); // TODO: NOT IN CONSOLE
+        console.error("Une erreur est survenue ( " + error + " )");
     }
 } // checkLogin ()

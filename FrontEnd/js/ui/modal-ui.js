@@ -9,17 +9,37 @@ import {
     formHandler
 } from "../modal-handler.js";
 
-export let modalWindow, modalReturnButton, modalTitle, modalCloseButton, modalMessageContainer, modalGallery, modalAddPhoto, modalSubmitButton, modalGalleryButton;
+// - main modal window
+export let modalWindow, modalOverlay, modalReturnButton, modalCloseButton, modalTitle, modalMessageContainer;
+// - gallery
+export let modalGallery, modalGalleryButton;
+// - addPhoto
+export let modalAddPhoto, modalSubmitButton;
+// - addPhoto Form
 export let photoTitleInputField, photoTitleErrorMessageCount, photoTitleErrorMessageAlphaNum, categoryDropdown;
-export let modalAddPhotoButton, modalRealHiddenAddPictureButton;
-export let modalInstructions, modalPicturePreview, modalImg;
+export let modalAddPhotoButton, modalRealHiddenAddPictureButton, modalInstructions, modalPicturePreview, modalImg;
 
 export function buildModalWindow () {
+    // -- Voile sur le site quand la modale s'ouvre -------------------------------------
+
+    const html = document.querySelector("html");
+
+    modalOverlay = document.createElement("div");
+    modalOverlay.style.display = "none";
+    modalOverlay.style.position = "fixed";
+    modalOverlay.style.width = "100%";
+    modalOverlay.style.height = "100%";
+    modalOverlay.style.top = "0px";
+    modalOverlay.style.background = "rgba(0,0,0,0.3)";
+    modalOverlay.style.zIndex = "1";
+    html.appendChild(modalOverlay);
+
     // -- Container global de la modale -------------------------------------------------
 
     modalWindow = document.getElementById("modalWindow");
+
     modalWindow.id = "modalWindow";
-    modalWindow.style["z-index"] = "1";
+    modalWindow.style["z-index"] = "2";
     modalWindow.style.Height = "688px";
     modalWindow.style.maxWidth = "630px";
     modalWindow.style.backgroundColor = "#fFf";
@@ -57,7 +77,7 @@ export function buildModalWindow () {
     modalCloseButton.style.top = "30px";
     modalCloseButton.style.right = "30px";
     modalCloseButton.style.cursor = "pointer";
-    // le close est géré dans modalClickHandler de script.js
+    // le close est géré dans displayModalWindow de modal-handler.js
     modalWindow.appendChild(modalCloseButton);
 
     // -- Titre de la modale ------------------------------------------------------------
@@ -92,7 +112,7 @@ export function buildModalWindow () {
 
     modalGallery = document.createElement("div");
     modalGallery.style["grid-template-columns"] = "1fr 1fr 1fr 1fr 1fr";
-    modalGallery.style["grid-column-gap"] = "20px";
+    modalGallery.style["grid-column-gap"] = "10px";
     modalGallery.style["grid-row-gap"] = "20px";
     // modalGallery.style.margin = "30px 105px 60px 105px";
     modalGallery.style.margin = "60px 105px";
@@ -108,7 +128,7 @@ export function buildModalWindow () {
     // -- Container de la page addPhoto -------------------------------------------------
 
     modalAddPhoto = document.createElement("div");
-    modalAddPhoto.style.display = "none"; // Pas utile, mais par principe
+    modalAddPhoto.style.display = "none";
     modalAddPhoto.style.margin = "60px 105px";
     modalAddPhoto.style.display = "flex";
     modalAddPhoto.style.flexDirection = "column";
@@ -139,6 +159,7 @@ export function buildModalWindow () {
     // le bouton "+ Ajouter photo"
     modalAddPhotoButton = document.createElement("button");
     modalRealHiddenAddPictureButton = document.createElement("input");
+    modalRealHiddenAddPictureButton.autocomplete = "off";
     modalRealHiddenAddPictureButton.type = "file";
     modalRealHiddenAddPictureButton.accept = ".jpg, .png";
     modalRealHiddenAddPictureButton.style.display = "none";
@@ -162,6 +183,7 @@ export function buildModalWindow () {
     modalInstructions = document.createElement("div");
     modalInstructions.innerText = "jpg, png : 4mo max";
     modalInstructions.style.color = "#444444";
+    modalInstructions.style.fontSize = "10px";
     modalPhotoContainer.appendChild(modalInstructions);
 
     // -- Formulaire d'ajout de photo ---------------------------------------------------
@@ -193,6 +215,8 @@ export function buildModalWindow () {
     photoTitleContainer.appendChild(photoTitleErrorMessageAlphaNum);
 
     photoTitleInputField = document.createElement("input");
+    photoTitleInputField.autocomplete = "photo-title";
+    photoTitleInputField.id = "photoTitleInputField";
     photoTitleInputField.style.height = "51px";
     photoTitleInputField.style.color = "#3D3D3D";
     photoTitleInputField.style.paddingLeft = "16px";
@@ -203,6 +227,7 @@ export function buildModalWindow () {
     categoryLabel.innerText = "Catégorie";
     categoryLabel.style.color = "#3D3D3D";
     categoryDropdown = document.createElement("select");
+    categoryDropdown.id = "categoryDropdown";
     categoryDropdown.style.height = "51px";
     categoryDropdown.style.color = "#3D3D3D";
     categoryDropdown.style.paddingLeft = "16px";
@@ -345,5 +370,5 @@ export function displayModalMessage (message, isError = null) {
     modalMessageContainer.innerHTML = message;
     setTimeout(() => {
         modalMessageContainer.style.display = "none";
-    }, 7500);
+    }, 5000);
 }

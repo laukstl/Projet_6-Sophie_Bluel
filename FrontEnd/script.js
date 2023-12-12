@@ -1,8 +1,3 @@
-/* eslint-disable no-irregular-whitespace */
-/* 1332 lignes de codes */
-
-// NOTE: Séparation des préoccupations : chaque fonction ou module a une seule responsabilité et suit le principe de la séparation des préoccupations.
-
 import {
     initMainPage
 } from "./js/main-handler.js";
@@ -12,34 +7,7 @@ import {
 } from "./js/ui/main-ui.js";
 
 // variables générales
-export const generalVar = { cardsList: [], categoryList: [] };
-
-/*
-cardsList
-Array(11) [ {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, … ]
-​0: Object { id: 1, title: "Abajour Tahina", imageUrl: "http://localhost:5678/images/abajour-tahina1651286843956.png", … }
-​1: Object { id: 2, title: "Appartement Paris V", imageUrl: "http://localhost:5678/images/appartement-paris-v1651287270508.png", … }
-​2: Object { id: 3, title: "Restaurant Sushisen - Londres", imageUrl: "http://localhost:5678/images/restaurant-sushisen-londres1651287319271.png", … }
-​3: Object { id: 4, title: "Villa “La Balisiere” - Port Louis", imageUrl: "http://localhost:5678/images/la-balisiere1651287350102.png", … }
-​4: Object { id: 5, title: "Structures Thermopolis", imageUrl: "http://localhost:5678/images/structures-thermopolis1651287380258.png", … }
-​5: Object { id: 6, title: "Appartement Paris X", imageUrl: "http://localhost:5678/images/appartement-paris-x1651287435459.png", … }
-​6: Object { id: 7, title: "Pavillon “Le coteau” - Cassis", imageUrl: "http://localhost:5678/images/le-coteau-cassis1651287469876.png", … }
-​7: Object { id: 8, title: "Villa Ferneze - Isola d’Elba", imageUrl: "http://localhost:5678/images/villa-ferneze1651287511604.png", … }
-​8: Object { id: 9, title: "Appartement Paris XVIII", imageUrl: "http://localhost:5678/images/appartement-paris-xviii1651287541053.png", … }
-​9: Object { id: 10, title: "Bar “Lullaby” - Paris", imageUrl: "http://localhost:5678/images/bar-lullaby-paris1651287567130.png", … }
-​10: Object { id: 11, title: "Hotel First Arte - New Delhi", imageUrl: "http://localhost:5678/images/hotel-first-arte-new-delhi1651287605585.png", … }
-​length: 11
-*/
-
-/*
-categoryList
-Array(3) [ {…}, {…}, {…} ]
-0: Object { id: 0, name: "Tous" } // added in main-handler
-1: Object { id: 1, name: "Objets" }
-2: Object { id: 2, name: "Appartements" }
-3: Object { id: 3, name: "Hotels & restaurants" }
-length: 4
-*/
+export const generalVar = { cardsList: [], categoryList: [], srvURL: "http://localhost:5678/" };
 
 // -- Initialisation du site ------------------------------------------------------------
 
@@ -53,8 +21,9 @@ firstInit();
 // -- Récupération des images du serveur ------------------------------------------------
 
 export async function fetchCards () {
+    const url = generalVar.srvURL;
     try {
-        const worksResponse = await fetch("http://localhost:5678/api/works");
+        const worksResponse = await fetch(url + "api/works");
 
         if (worksResponse.ok) { // 200-299
             testWorksResponse(worksResponse);
@@ -63,7 +32,7 @@ export async function fetchCards () {
             return;
         }
 
-        const categorieResponse = await fetch("http://localhost:5678/api/categories");
+        const categorieResponse = await fetch(url + "api/categories");
 
         if (categorieResponse.ok) { // 200-299
             await testCategorieResponse(categorieResponse);
