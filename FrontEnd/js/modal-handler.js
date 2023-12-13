@@ -38,6 +38,13 @@ import {
     updatePortfolioCardsList
 } from "./main-handler.js";
 
+let addingPhotoImageSelected, addingPhotoTitleSelected, addingPhotoCategorySelected;
+
+let testSize = false;
+let testType = false;
+let testRegEx = false;
+let testCharCount = false;
+
 /*
  ---------------------------------------------------
  -- Show/Hide Modal ---------------------------------------------------------------------
@@ -71,7 +78,7 @@ export function displayModalWindow () {
 
     modalReturnButton.addEventListener("click", displayPhotoGallery);
 
-    modalSubmitButton.addEventListener("click", () => submitForm(modalRealHiddenAddPictureButton, photoTitleInputField, categoryDropdown));
+    modalSubmitButton.addEventListener("click", submitForm);
 
     modalGalleryButton.addEventListener("click", () => { displayAddPhoto(); });
 
@@ -121,7 +128,6 @@ function modalKeydownHandler (event) {
     }
 }
 
-let selectedFile;
 // -- Gestion affichage de la gallery de la modale --------------------------------------
 
 function displayPhotoGallery () {
@@ -156,7 +162,7 @@ function displayAddPhoto () {
     modalPicturePreview.innerHTML = "";
     modalPicturePreview.style.display = "none";
     photoTitleInputField.value = "";
-    selectedFile = null;
+
     photoTitleErrorMessageAlphaNum.style.color = "lightgrey";
     photoTitleErrorMessageCount.style.color = "lightgrey";
 
@@ -176,18 +182,22 @@ function displayAddPhoto () {
             modalSubmitButtonDisabled();
         } else {
             photoTitleErrorMessageAlphaNum.style.color = "green";
+            testRegEx = true;
             modalSubmitButtonEnabled();
         }
 
         if (titleInput.length >= 4) {
+            testCharCount = true;
             photoTitleErrorMessageCount.style.color = "green";
         } else {
             photoTitleErrorMessageCount.style.color = "red";
             modalSubmitButtonDisabled();
         }
+
+        isFormEligibleForSubmission();
     });
 
-    fileSelectionAndTest();
+    modalRealHiddenAddPictureButton.addEventListener("change", fileSelectionAndTest);
 }
 
 function hideAddPhoto () {
@@ -195,12 +205,22 @@ function hideAddPhoto () {
     modalReturnButton.style.display = "none";
     modalSubmitButton.style.display = "none";
 
-    photoTitleInputField.value = "";
-    selectedFile = null;
-    modalPicturePreview.innerHTML = "";
-    modalPicturePreview.style.display = "none";
+    reinitAddPhotoForm();
 
     modalReturnButton.removeEventListener("click", () => displayPhotoGallery);
+}
+
+function reinitAddPhotoForm () {
+    photoTitleInputField.value = "";
+    modalPicturePreview.innerHTML = "";
+    // modalRealHiddenAddPictureButton.value = null;
+    categoryDropdown.value = 1;
+    modalPicturePreview.style.display = "none";
+
+    testSize = false;
+    testType = false;
+    testRegEx = false;
+    testCharCount = false;
 }
 
 /*
@@ -264,13 +284,24 @@ export function formHandler () {
     });
 }
 
-async function submitForm (modalRealHiddenAddPictureButton, photoTitleInputField, categoryDropdown) {
-    // if (modalSubmitButton.disabled === true) { return; }
+async function submitForm () {
+    if (!testSize || !testType) {
+        displayModalMessage("Erreur de taille ou de type du fichier", true);
+        return;
+    } else if (modalRealHiddenAddPictureButton.value === null) {
+        displayModalMessage("Pas de fichier sélectionné", true);
+        return;
+    }
+
+    addingPhotoImageSelected = modalRealHiddenAddPictureButton.files[0];
+    addingPhotoTitleSelected = photoTitleInputField.value;
+    addingPhotoCategorySelected = categoryDropdown.value;
 
     const formData = new FormData();
-    formData.append("image", modalRealHiddenAddPictureButton.files[0]);
-    formData.append("title", photoTitleInputField.value);
-    formData.append("category", categoryDropdown.value);
+
+    formData.append("image", addingPhotoImageSelected);
+    formData.append("title", addingPhotoTitleSelected);
+    formData.append("category", addingPhotoCategorySelected);
 
     try {
         let UserToken;
@@ -290,6 +321,8 @@ async function submitForm (modalRealHiddenAddPictureButton, photoTitleInputField
         if (response.ok) {
             displayModalMessage("La création de la carte a réussie !", false);
 
+            reinitAddPhotoForm();
+
             displayAddPhoto();
         } else {
             displayModalMessage("La création de la carte a échouée !<br> ( status: " + response.statusText + ", code: " + response.status + " )", true);
@@ -300,20 +333,37 @@ async function submitForm (modalRealHiddenAddPictureButton, photoTitleInputField
     updateAllGallery();
 }
 
+function isFormEligibleForSubmission () {
+    const isEligible = testSize && testType && testRegEx && testCharCount;
+
+    if (isEligible) {
+        modalSubmitButtonEnabled();
+    } else {
+        modalSubmitButtonDisabled();
+    }
+
+    return isEligible;
+}
+
 function fileSelectionAndTest () {
-    modalRealHiddenAddPictureButton.addEventListener("change", (event) => {
-        selectedFile = event.target.files[0];
+        const selectedFile = event.target.files[0];
 
         // ("Nom du fichier:", selectedFile.name);
 
         if (selectedFile.size > 4000000) {
             displayModalMessage("Le fichier doit être inférieur à 4Mo", true);
+            testSize = false;
             return;
+        } else {
+            testSize = true;
         }
 
         if (selectedFile.type !== "image/jpeg" && selectedFile.type !== "image/png") {
             displayModalMessage("Seuls les .JPG et les .PNG sont acceptés", true);
+            testType = false;
             return;
+        } else {
+            testType = true;
         }
 
         // display the thumbail
@@ -327,5 +377,8 @@ function fileSelectionAndTest () {
         modalImg.style.display = "none";
         modalAddPhotoButton.style.display = "none";
         modalInstructions.style.display = "none";
-    });
+
+        isFormEligibleForSubmission();
+
+        return true;
 }

@@ -164,7 +164,7 @@ function loginLogoutLinkHandler () {
                 window.localStorage.removeItem("userID");
                 window.localStorage.removeItem("tokenID");
             } catch (error) {
-                console.log("Error de nettoyage des tokens : " + error);
+                console.log("Erreur de nettoyage des tokens : " + error);
             }
         }
     });
