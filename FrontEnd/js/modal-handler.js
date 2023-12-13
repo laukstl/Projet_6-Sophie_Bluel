@@ -179,19 +179,22 @@ function displayAddPhoto () {
         const regex = /^[a-zA-Z0-9.&_-]+$/;
         if (!regex.test(photoTitleInputField.value)) {
             photoTitleErrorMessageAlphaNum.style.color = "red";
-            modalSubmitButtonDisabled();
+            testRegEx = false;
+            isFormEligibleForSubmission();
         } else {
             photoTitleErrorMessageAlphaNum.style.color = "green";
             testRegEx = true;
-            modalSubmitButtonEnabled();
+            isFormEligibleForSubmission();
         }
 
         if (titleInput.length >= 4) {
             testCharCount = true;
             photoTitleErrorMessageCount.style.color = "green";
+            isFormEligibleForSubmission();
         } else {
             photoTitleErrorMessageCount.style.color = "red";
-            modalSubmitButtonDisabled();
+            testCharCount = false;
+            isFormEligibleForSubmission();
         }
 
         isFormEligibleForSubmission();

@@ -1,3 +1,5 @@
+// 1522
+
 import {
     initMainPage
 } from "./js/main-handler.js";
